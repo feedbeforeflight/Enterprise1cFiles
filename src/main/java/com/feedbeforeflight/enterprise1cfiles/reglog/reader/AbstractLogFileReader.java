@@ -27,6 +27,9 @@ public abstract class AbstractLogFileReader {
 
     public void openFile() throws IOException {
         //Assert.hasText(fileName, "File name must be set");
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
 
         reader = new LineNumberReader(new FileReader(fileName));
     }
