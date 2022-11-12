@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
@@ -53,7 +54,7 @@ public class TechlogFileReader implements AutoCloseable {
     }
 
     public void openFile() throws IOException {
-        reader = new LineNumberReader(new FileReader(description.getPath().toString()));
+        reader = new LineNumberReader(new FileReader(description.getPath().toString(), StandardCharsets.UTF_8));
 
         if (description.getLinesRead() > 0) {
             skipLines(description.getLinesRead());
