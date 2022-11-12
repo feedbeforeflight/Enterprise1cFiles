@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -52,7 +53,7 @@ public class LogfileFilesList {
             logfileDescription = new LogfileDescription(filePath, workDirectoryName);
         }
         else {
-            try (BufferedReader bufferedReader = Files.newBufferedReader(descriptionFilePath)) {
+            try (BufferedReader bufferedReader = Files.newBufferedReader(descriptionFilePath, StandardCharsets.UTF_8)) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 logfileDescription = objectMapper.readValue(bufferedReader, LogfileDescription.class);
                 logfileDescription.setFilePath(filePath);
