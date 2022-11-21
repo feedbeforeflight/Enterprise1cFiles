@@ -84,7 +84,8 @@ public abstract class AbstractTechlogEventFieldMapper {
                 event.setLineNumber(Integer.parseInt(parameters.get("_linenumber")));
 
         try {
-            event.setTimestamp(simpleDateFormat.parse(parameters.get("_timestamp")));
+            long timepartNanos = Integer.parseInt(parameters.get("_timepart")) * 1000L;
+            event.setTimestamp(simpleDateFormat.parse(parameters.get("_timestamp")).toInstant().plusNanos(timepartNanos));
         } catch (ParseException e) {
             log.error("Error parsing event timestamp: [{}]", parameters.get("_timestamp"));
             return null;
@@ -93,7 +94,7 @@ public abstract class AbstractTechlogEventFieldMapper {
         event.setProcessId(parameters.get("_processId"));
         event.setFileId(parameters.get("_fileId"));
 
-        event.setTimepart(Integer.parseInt(parameters.get("_timepart")));
+        //event.setTimepart(Integer.parseInt(parameters.get("_timepart")));
         event.setDuration(Long.parseLong(parameters.get("_duration")));
 
         event.setType(TechlogEventType.getByName(parameters.get("_type")));

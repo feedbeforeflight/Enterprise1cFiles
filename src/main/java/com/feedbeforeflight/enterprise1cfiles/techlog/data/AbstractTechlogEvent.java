@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter @Setter
@@ -17,8 +17,8 @@ public abstract class AbstractTechlogEvent {
     protected String fileId;
 
     protected int lineNumber;
-    protected Date timestamp;
-    protected int timepart;
+    protected Instant timestamp;
+    //protected int timepart;
     protected long duration;
     protected TechlogEventType type; // from name
     protected int level;
@@ -40,9 +40,9 @@ public abstract class AbstractTechlogEvent {
     }
 
     public String toString() {
-        return serverName + "-" + processType + "-" + processId + "-" + String.valueOf(lineNumber) + " " +
-                String.valueOf(timestamp) +
-                "." + timepart +
+        return serverName + "-" + processType + "-" + processId + "-" + lineNumber + " " +
+                timestamp +
+                //"." + timepart +
                 " duration:" + duration +
                 " " + type +
                 " L" + level;
