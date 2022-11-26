@@ -14,14 +14,14 @@ public class TlockTechlogEventFieldMapper extends AbstractTechlogEventFieldMappe
 
         parameters.forEach((key, value) -> {
               switch (key) {
-                case "process":
-                    tlockEvent.setRegions(value);
+                case "Regions":
+                    tlockEvent.setRegions(removeQuotes(value));
                     break;
-                case "p:processName":
-                    tlockEvent.setLocks(value);
+                case "Locks":
+                    tlockEvent.setLocks(removeQuotes(value));
                     break;
                 case "WaitConnections":
-                    tlockEvent.setWaitConnections(value);
+                    tlockEvent.setWaitConnections(removeQuotes(value));
                     break;
             }
         });

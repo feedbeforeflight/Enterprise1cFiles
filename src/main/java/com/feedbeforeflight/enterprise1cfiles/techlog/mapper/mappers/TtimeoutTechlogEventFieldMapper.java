@@ -13,7 +13,7 @@ public class TtimeoutTechlogEventFieldMapper extends AbstractTechlogEventFieldMa
 
         parameters.forEach((key, value) -> {
             if ("WaitConnections".equals(key)) {
-                specificEvent.setWaitConnections(value);
+                specificEvent.setWaitConnections(removeQuotes(value));
             }
         });
 

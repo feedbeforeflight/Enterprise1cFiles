@@ -149,6 +149,14 @@ public abstract class AbstractTechlogEventFieldMapper {
 
         if (string.equals("\"\"")) { return ""; }
         else if (string.equals("''")) { return ""; }
-        else { return string.substring(1, string.length() - 1); }
+        else {
+            if ((string.charAt(0) == '\'' && string.charAt(string.length() - 1) == '\'') ||
+                    (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"')){
+                return string.substring(1, string.length() - 1);
+            }
+            else {
+                return string;
+            }
+        }
     }
 }

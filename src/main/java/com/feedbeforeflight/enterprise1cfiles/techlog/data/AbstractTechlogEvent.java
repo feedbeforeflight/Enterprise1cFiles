@@ -11,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public abstract class AbstractTechlogEvent {
 
+    protected Instant recordTime;
     protected String serverName;
     protected TechlogProcessType processType; // process
     protected String processId;
@@ -18,7 +19,6 @@ public abstract class AbstractTechlogEvent {
 
     protected int lineNumber;
     protected Instant timestamp;
-    //protected int timepart;
     protected long duration;
     protected TechlogEventType type; // from name
     protected int level;
@@ -42,7 +42,6 @@ public abstract class AbstractTechlogEvent {
     public String toString() {
         return serverName + "-" + processType + "-" + processId + "-" + lineNumber + " " +
                 timestamp +
-                //"." + timepart +
                 " duration:" + duration +
                 " " + type +
                 " L" + level;
