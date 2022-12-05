@@ -1,13 +1,17 @@
 package com.feedbeforeflight;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import com.feedbeforeflight.enterprise1cfiles.techlog.reader.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,16 +33,23 @@ public class Main {
 
 //        String pathName = "d:\\Data\\techlog\\tlock\\erp-01-01\\rphost_4236\\20031406.log";
         Path path = Paths.get(pathName);
-        TechlogFileDescription description = new TechlogFileDescription(path, TechlogProcessType.RPHOST, 4236, "erp-01-01",
+        TechlogFileDescription description = new TechlogFileDescription(path, TechlogProcessType.RPHOST, 4236, "main", "erp-01-01",
                 new TechlogItemWriter() {
                     @Override
                     public void writeItem(AbstractTechlogEvent event) {
 
                     }
 
+//                    @Override
+//                    public int getLinesLoaded(String fileId) {
+//                        return 0;
+//                    }
+
                     @Override
-                    public int getLinesLoaded(String fileId) {
-                        return 0;
+                    public Map<String, Instant> getLastProgressBatch(List<String> fileIds) {
+                        Map<String, Instant> result = new HashMap<>();
+                        fileIds.forEach(s -> result.put(s, null));
+                        return result;
                     }
 
                     @Override

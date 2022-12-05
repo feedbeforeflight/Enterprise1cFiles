@@ -31,15 +31,14 @@ public class TechlogEventFactory {
 
     private AbstractTechlogEvent getEventByType(TechlogEventType type) {
         // add new events only here
-        AbstractTechlogEvent event = switch (type) {
+
+        return switch (type) {
             case TLOCK -> new TlockTechlogEvent();
             case TTIMEOUT -> new TtimeoutTechlogEvent();
             case TDEADLOCK -> new TdeadlockTechlogEvent();
             case CONTEXT -> new ContextTechlogEvent();
             default -> null;
         };
-        
-        return event;
     }
 
     public AbstractTechlogEvent createEvent(Map<String, String> parameters, AbstractTechlogEvent prevEvent) {

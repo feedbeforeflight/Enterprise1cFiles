@@ -1,5 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

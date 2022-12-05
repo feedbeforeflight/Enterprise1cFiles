@@ -27,7 +27,7 @@ public class TechlogEventFieldMapperFactory {
     }
 
     private static EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> getMappers(EnumSet<TechlogEventType> typeSet) {
-        EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mapperMap = new EnumMap(TechlogEventType.class);
+        EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mapperMap = new EnumMap<>(TechlogEventType.class);
 
         for (TechlogEventType type : typeSet) {
             mapperOfType(type).ifPresent(mapper -> mapperMap.put(type, mapper));

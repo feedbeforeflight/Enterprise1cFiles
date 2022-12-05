@@ -90,6 +90,7 @@ public abstract class AbstractTechlogEventFieldMapper {
             log.error("Error parsing event timestamp: [{}]", parameters.get("_timestamp"));
             return null;
         }
+        event.setGroup(parameters.get("_groupname"));
         event.setServerName(parameters.get("_servername"));
         event.setProcessId(parameters.get("_processId"));
         event.setFileId(parameters.get("_fileId"));

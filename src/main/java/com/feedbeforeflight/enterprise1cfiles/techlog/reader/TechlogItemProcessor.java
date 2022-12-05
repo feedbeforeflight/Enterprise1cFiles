@@ -1,5 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ public class TechlogItemProcessor {
         Map<String,String> parameters = new HashMap<>();
 
         String token = tokens.get(0);
+        parameters.put("_groupname", description.getGroupName());
         parameters.put("_servername", description.getServerName());
         parameters.put("_processId", String.valueOf(description.getProcessId()));
         parameters.put("_fileId", description.getId());

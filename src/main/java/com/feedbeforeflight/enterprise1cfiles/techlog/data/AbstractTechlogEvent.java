@@ -11,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public abstract class AbstractTechlogEvent {
 
+    protected String group;
     protected Instant recordTime;
     protected String serverName;
     protected TechlogProcessType processType; // process

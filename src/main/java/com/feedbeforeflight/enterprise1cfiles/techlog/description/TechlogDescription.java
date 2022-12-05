@@ -1,5 +1,6 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
+package com.feedbeforeflight.enterprise1cfiles.techlog.description;
 
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,13 +18,16 @@ public class TechlogDescription {
     @Getter
     private final String pathName;
     @Getter
+    private final String groupName;
+    @Getter
     private final String serverName;
     @Getter
-    private final Map<String, DirectoryDescriptionProcessor> directories;
+    private final Map<String, TechlogProcessDirectoryProcessor> directories;
     private final TechlogItemWriter writer;
 
-    public TechlogDescription(String pathName, String serverName, TechlogItemWriter writer) {
+    public TechlogDescription(String pathName, String groupName, String serverName, TechlogItemWriter writer) {
         this.pathName = pathName;
+        this.groupName = groupName;
         this.serverName = serverName;
         this.writer = writer;
         this.directories = new HashMap<>();
@@ -45,9 +49,9 @@ public class TechlogDescription {
     }
 
     private void appendDirectory(Path directoryPath) {
-        DirectoryDescriptionProcessor directoryDescription = new DirectoryDescriptionProcessor(directoryPath, serverName, writer);
-        directoryDescription.init();
-        this.directories.put(directoryPath.getFileName().toString(), directoryDescription);
+        TechlogProcessDirectoryProcessor directoryProcessor = new TechlogProcessDirectoryProcessor(directoryPath, groupName, serverName, writer);
+        directoryProcessor.refreshFiles();
+        this.directories.put(directoryPath.getFileName().toString(), directoryProcessor);
     }
 
 }

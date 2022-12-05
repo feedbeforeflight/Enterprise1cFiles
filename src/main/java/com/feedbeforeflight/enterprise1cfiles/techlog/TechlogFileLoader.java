@@ -1,7 +1,13 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
+package com.feedbeforeflight.enterprise1cfiles.techlog;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogEventFactory;
+import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogFileFieldTokenizer;
+import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogFileReader;
+import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogItemProcessor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -31,18 +37,23 @@ public class TechlogFileLoader {
             reader.openFile();
             log.info("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
-            skipped = reader.getSkippedLines();
+//            skipped = reader.getSkippedLines();
+            skipped = 0;
 
             Deque<String> lines = reader.readItemLines();
             while(!lines.isEmpty()) {
                 List<String> tokens = TechlogFileFieldTokenizer.readEventTokens(lines);
                 Map<String, String> parameters = TechlogItemProcessor.process(tokens, description, reader.getLineNumber());
                 event = factory.createEvent(parameters, event);
-                writer.writeItem(event);
+                if (description.getLastLoadedEventTimestamp() == null ||
+                        event.getTimestamp().isAfter(description.getLastLoadedEventTimestamp())) {
+                    writer.writeItem(event);
 
-                if (event != null) {
-                    summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
+                    if (event != null) {
+                        summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
+                    }
                 }
+                else {skipped++;}
 
                 lines = reader.readItemLines();
             }
@@ -50,7 +61,7 @@ public class TechlogFileLoader {
             log.error("Something gone wrong while reading file " + description.getId(), e);
         }
 
-        log.info("-- skipped {} lines", skipped);
+        log.info("-- skipped {} events", skipped);
         log.info("-- loaded:");
         for (TechlogEventType eventType : summary.keySet()) {
             log.info("--- {} - {} events", eventType, summary.get(eventType));

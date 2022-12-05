@@ -1,5 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileReader;
@@ -49,16 +50,16 @@ public class TechlogFileReader implements AutoCloseable {
             }
         }
 
-        description.setLinesRead(getLineNumber());
+//        description.setLinesRead(getLineNumber());
         return result;
     }
 
     public void openFile() throws IOException {
         reader = new LineNumberReader(new FileReader(description.getPath().toString(), StandardCharsets.UTF_8));
 
-        if (description.getLinesRead() > 0) {
-            skipLines(description.getLinesRead());
-        }
+//        if (description.getLinesRead() > 0) {
+//            skipLines(description.getLinesRead());
+//        }
 
         recordStartLineBuffer = reader.readLine();
 
