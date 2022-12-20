@@ -1,10 +1,7 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.mapper;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TlockTechlogEventFieldMapper;
+import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.*;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.ContextTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TdeadlockTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TtimeoutTechlogEventFieldMapper;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -21,6 +18,7 @@ public class TechlogEventFieldMapperFactory {
             case TTIMEOUT -> new TtimeoutTechlogEventFieldMapper();
             case TDEADLOCK -> new TdeadlockTechlogEventFieldMapper();
             case CONTEXT -> new ContextTechlogEventFieldMapper();
+            case DBMSSQL -> new DbmssqlTechlogEventFieldMapper();
             default -> null;
         };
         return Optional.ofNullable(mapper);

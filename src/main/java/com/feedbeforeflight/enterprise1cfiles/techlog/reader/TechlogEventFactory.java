@@ -2,10 +2,7 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.ContextTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TdeadlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.*;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.AbstractTechlogEventFieldMapper;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.TechlogEventFieldMapperFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +34,7 @@ public class TechlogEventFactory {
             case TTIMEOUT -> new TtimeoutTechlogEvent();
             case TDEADLOCK -> new TdeadlockTechlogEvent();
             case CONTEXT -> new ContextTechlogEvent();
+            case DBMSSQL -> new DbmssqlTechlogEvent();
             default -> null;
         };
     }
