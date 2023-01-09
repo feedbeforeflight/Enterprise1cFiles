@@ -10,6 +10,12 @@ public class TtimeoutTechlogEvent extends AbstractTechlogEvent {
 
     protected String waitConnections;
 
-    public TtimeoutTechlogEvent() { super(TechlogEventType.TTIMEOUT); }
+    public static TechlogEventType classType() {
+        return TechlogEventType.TTIMEOUT;
+    }
 
+    @Override
+    public TechlogEventType getType() {
+        return classType();
+    }
 }
