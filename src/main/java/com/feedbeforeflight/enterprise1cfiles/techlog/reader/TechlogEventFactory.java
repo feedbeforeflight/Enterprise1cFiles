@@ -8,6 +8,7 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEv
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.AbstractTechlogEventFieldMapper;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.TechlogEventFieldMapperFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
@@ -26,7 +27,9 @@ public class TechlogEventFactory {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
     private final String server; // TODO delete
     private final String cluster; // TODO delete
+    @Getter
     private final EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mapperMap;
+    @Getter
     private final EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> classesMap;
 
     public TechlogEventFactory(String cluster, String server) {
@@ -34,10 +37,10 @@ public class TechlogEventFactory {
         this.cluster = cluster;
 
         mapperMap = TechlogEventFieldMapperFactory.getAllMappers();
-        classesMap = getClassesMap();
+        classesMap = createClassesMap();
     }
 
-    private static EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> getClassesMap() {
+    private static EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> createClassesMap() {
         EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> result = new EnumMap<>(TechlogEventType.class);
 
         Class<AbstractTechlogEvent> parentEventClass = AbstractTechlogEvent.class;
