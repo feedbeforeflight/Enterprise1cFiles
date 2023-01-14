@@ -5,6 +5,12 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
 
 public class ContextTechlogEvent extends AbstractTechlogEvent {
 
-    public ContextTechlogEvent() { super(TechlogEventType.CONTEXT); }
+    public static TechlogEventType classType() {
+        return TechlogEventType.CONTEXT;
+    }
 
+    @Override
+    public TechlogEventType getType() {
+        return classType();
+    }
 }

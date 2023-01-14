@@ -12,8 +12,12 @@ public class TlockTechlogEvent extends AbstractTechlogEvent {
     protected String locks;
     protected String waitConnections;
 
-    public TlockTechlogEvent() {
-        super(TechlogEventType.TLOCK);
+    public static TechlogEventType classType() {
+        return TechlogEventType.TLOCK;
     }
 
+    @Override
+    public TechlogEventType getType() {
+        return classType();
+    }
 }
