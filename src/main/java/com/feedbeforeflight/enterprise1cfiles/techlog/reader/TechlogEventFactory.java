@@ -2,17 +2,12 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.ContextTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TdeadlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.AbstractTechlogEventFieldMapper;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.TechlogEventFieldMapperFactory;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
-import org.reflections.scanners.SubTypesScanner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,20 +19,22 @@ import java.util.Set;
 @Slf4j
 public class TechlogEventFactory {
 
+    static{
+        mappers = TechlogEventFieldMapperFactory.getAllMappers();
+        eventClasses = createClassesMap();
+    }
+
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
     private final String server; // TODO delete
     private final String cluster; // TODO delete
     @Getter
-    private final EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mapperMap;
+    private static final EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mappers;
     @Getter
-    private final EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> classesMap;
+    private static final EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> eventClasses;
 
     public TechlogEventFactory(String cluster, String server) {
         this.server = server;
         this.cluster = cluster;
-
-        mapperMap = TechlogEventFieldMapperFactory.getAllMappers();
-        classesMap = createClassesMap();
     }
 
     private static EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> createClassesMap() {
@@ -63,18 +60,9 @@ public class TechlogEventFactory {
     }
 
     private AbstractTechlogEvent getEventByType(TechlogEventType type) {
-        // add new events only here
-
-//        return switch (type) {
-//            case TLOCK -> new TlockTechlogEvent();
-//            case TTIMEOUT -> new TtimeoutTechlogEvent();
-//            case TDEADLOCK -> new TdeadlockTechlogEvent();
-//            case CONTEXT -> new ContextTechlogEvent();
-//            default -> null;
-//        };
-        Class<? extends AbstractTechlogEvent> eventClass = classesMap.get(type);
+        Class<? extends AbstractTechlogEvent> eventClass = eventClasses.get(type);
         try {
-            return (AbstractTechlogEvent) eventClass.getDeclaredConstructor().newInstance();
+            return eventClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             log.error("Failed to create new instance of class " + eventClass.getName(), e);
         }
@@ -90,7 +78,7 @@ public class TechlogEventFactory {
             return null;
         }
 
-        AbstractTechlogEventFieldMapper mapper = mapperMap.get(event.getType());
+        AbstractTechlogEventFieldMapper mapper = mappers.get(event.getType());
         if (mapper == null) {
             return null;
         }

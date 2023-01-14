@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -22,11 +20,11 @@ class TechlogEventFactoryTest {
     void createObject_ShouldCollectAllConcreteEventClasses() {
         TechlogEventFactory factory = new TechlogEventFactory("cluster", "server");
 
-        assertThat(factory.getClassesMap().size(), equalTo(4));
-        assertThat(factory.getClassesMap().get(TechlogEventType.CONTEXT), is(ContextTechlogEvent.class));
-        assertThat(factory.getClassesMap().get(TechlogEventType.TDEADLOCK), is(TdeadlockTechlogEvent.class));
-        assertThat(factory.getClassesMap().get(TechlogEventType.TLOCK), is(TlockTechlogEvent.class));
-        assertThat(factory.getClassesMap().get(TechlogEventType.TTIMEOUT), is(TtimeoutTechlogEvent.class));
+        assertThat(factory.getEventClasses().size(), equalTo(4));
+        assertThat(factory.getEventClasses().get(TechlogEventType.CONTEXT), is(ContextTechlogEvent.class));
+        assertThat(factory.getEventClasses().get(TechlogEventType.TDEADLOCK), is(TdeadlockTechlogEvent.class));
+        assertThat(factory.getEventClasses().get(TechlogEventType.TLOCK), is(TlockTechlogEvent.class));
+        assertThat(factory.getEventClasses().get(TechlogEventType.TTIMEOUT), is(TtimeoutTechlogEvent.class));
     }
 
     @Test
