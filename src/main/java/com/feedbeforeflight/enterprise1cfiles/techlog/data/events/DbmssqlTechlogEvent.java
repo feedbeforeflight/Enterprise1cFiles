@@ -13,8 +13,13 @@ public class DbmssqlTechlogEvent extends AbstractTechlogEvent {
     protected String sql;
     protected String planSqlText;
 
-    public DbmssqlTechlogEvent() {
-        super(TechlogEventType.DBMSSQL);
+    public static TechlogEventType classType() {
+        return TechlogEventType.DBMSSQL;
+    }
+
+    @Override
+    public TechlogEventType getType() {
+        return classType();
     }
 
 }

@@ -10,8 +10,12 @@ public class TdeadlockTechlogEvent extends AbstractTechlogEvent {
 
     protected String deadlockConnectionIntersections;
 
-    public TdeadlockTechlogEvent() {
-        super(TechlogEventType.TDEADLOCK);
+    public static TechlogEventType classType() {
+        return TechlogEventType.TDEADLOCK;
     }
 
+    @Override
+    public TechlogEventType getType() {
+        return classType();
+    }
 }

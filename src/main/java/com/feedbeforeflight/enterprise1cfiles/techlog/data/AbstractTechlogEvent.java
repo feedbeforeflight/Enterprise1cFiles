@@ -1,5 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.data;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,7 +22,10 @@ public abstract class AbstractTechlogEvent {
     protected int lineNumber;
     protected Instant timestamp;
     protected long duration;
-    protected TechlogEventType type; // from name
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private static TechlogEventType type; // from name
     protected int level;
 
     protected String ibName; // p:processName
@@ -36,15 +40,13 @@ public abstract class AbstractTechlogEvent {
 
     protected UUID groupId;
 
-    public AbstractTechlogEvent(TechlogEventType type) {
-        this.type = type;
-    }
+    public abstract TechlogEventType getType();
 
     public String toString() {
         return serverName + "-" + processType + "-" + processId + "-" + lineNumber + " " +
                 timestamp +
                 " duration:" + duration +
-                " " + type +
+                " " + getType() +
                 " L" + level;
     }
 }

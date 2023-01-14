@@ -98,7 +98,7 @@ public abstract class AbstractTechlogEventFieldMapper {
         //event.setTimepart(Integer.parseInt(parameters.get("_timepart")));
         event.setDuration(Long.parseLong(parameters.get("_duration")));
 
-        event.setType(TechlogEventType.getByName(parameters.get("_type")));
+        //event.setType(TechlogEventType.getByName(parameters.get("_type")));
         event.setLevel(Integer.parseInt(parameters.get("_level")));
 
         parameters.forEach((key, value) -> {
