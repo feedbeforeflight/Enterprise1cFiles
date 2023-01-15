@@ -1,11 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.mapper;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TlockTechlogEventFieldMapper;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.ContextTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TdeadlockTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TtimeoutTechlogEventFieldMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
@@ -41,10 +36,12 @@ public class TechlogEventFieldMapperFactory {
 //        };
 //        return Optional.ofNullable(mapper);
         Class<? extends AbstractTechlogEventFieldMapper> mapperClass = availableMapperClasses.get(type);
-        try {
-            return Optional.of(mapperClass.getDeclaredConstructor().newInstance());
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            log.error("Failed to create new instance of class " + mapperClass.getName(), e);
+        if (mapperClass != null) {
+            try {
+                return Optional.of(mapperClass.getDeclaredConstructor().newInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                log.error("Failed to create new instance of class " + mapperClass.getName(), e);
+            }
         }
         return Optional.empty();
     }

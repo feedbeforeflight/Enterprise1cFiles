@@ -5,18 +5,14 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.ContextTechlog
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TdeadlockTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.ContextTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TdeadlockTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TlockTechlogEventFieldMapper;
-import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.TtimeoutTechlogEventFieldMapper;
+import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.*;
 import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogEventFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TechlogEventFieldMapperFactoryTest {
@@ -26,11 +22,23 @@ class TechlogEventFieldMapperFactoryTest {
     void availableMapperClasses_ShouldCollectAllConcreteMapperClasses() {
         EnumMap<TechlogEventType, Class<? extends AbstractTechlogEventFieldMapper>> mappers = TechlogEventFieldMapperFactory.getAvailableMapperClasses();
 
-        assertThat(mappers.size(), equalTo(4));
+        assertThat(mappers.size(), equalTo(5));
         assertThat(mappers.get(TechlogEventType.CONTEXT), is(ContextTechlogEventFieldMapper.class));
         assertThat(mappers.get(TechlogEventType.TDEADLOCK), is(TdeadlockTechlogEventFieldMapper.class));
         assertThat(mappers.get(TechlogEventType.TLOCK), is(TlockTechlogEventFieldMapper.class));
         assertThat(mappers.get(TechlogEventType.TTIMEOUT), is(TtimeoutTechlogEventFieldMapper.class));
+        assertThat(mappers.get(TechlogEventType.DBMSSQL), is(DbmssqlTechlogEventFieldMapper.class));
+    }
+
+    @Test
+    void getAllMappers_ShouldSucceed() {
+        EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mappers = TechlogEventFieldMapperFactory.getAllMappers();
+        assertThat(mappers.size(), equalTo(5));
+        assertThat(mappers.get(TechlogEventType.CONTEXT), instanceOf(ContextTechlogEventFieldMapper.class));
+        assertThat(mappers.get(TechlogEventType.TDEADLOCK), instanceOf(TdeadlockTechlogEventFieldMapper.class));
+        assertThat(mappers.get(TechlogEventType.TLOCK), instanceOf(TlockTechlogEventFieldMapper.class));
+        assertThat(mappers.get(TechlogEventType.TTIMEOUT), instanceOf(TtimeoutTechlogEventFieldMapper.class));
+        assertThat(mappers.get(TechlogEventType.DBMSSQL), instanceOf(DbmssqlTechlogEventFieldMapper.class));
     }
 
 }

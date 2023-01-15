@@ -59,6 +59,11 @@ class TechlogFileReaderTest {
         TechlogFileDescription description = Mockito.mock(TechlogFileDescription.class);
 
         TechlogFileReader reader = new TechlogFileReader(description);
+
+        Field recordStartLineBufferField = reader.getClass().getDeclaredField("recordStartLineBuffer");
+        recordStartLineBufferField.setAccessible(true);
+        recordStartLineBufferField.set(reader, "59:58.542039-3,TLOCK,4,process=rphost,p:processName=zup_besk,OSThread=6856,t:clientID=2184,t:applicationName=BackgroundJob,t:computerName=erp-01-01.bashes.ru,t:connectID=25522,SessionID=15,Usr=DefUser,Regions=Reference42.REFLOCK,Locks='Reference42.REFLOCK Shared Fld1091=0',WaitConnections=,Context='");
+
         LineNumberReader lineNumberReader = Mockito.mock(LineNumberReader.class);
         Mockito.when(lineNumberReader.readLine()).
                 thenReturn(
@@ -77,10 +82,6 @@ class TechlogFileReaderTest {
         Field readerField = reader.getClass().getDeclaredField("reader");
         readerField.setAccessible(true);
         readerField.set(reader, lineNumberReader);
-
-        Field recordStartLineBufferField = reader.getClass().getDeclaredField("recordStartLineBuffer");
-        recordStartLineBufferField.setAccessible(true);
-        recordStartLineBufferField.set(reader, "59:58.542039-3,TLOCK,4,process=rphost,p:processName=zup_besk,OSThread=6856,t:clientID=2184,t:applicationName=BackgroundJob,t:computerName=erp-01-01.bashes.ru,t:connectID=25522,SessionID=15,Usr=DefUser,Regions=Reference42.REFLOCK,Locks='Reference42.REFLOCK Shared Fld1091=0',WaitConnections=,Context='");
 
         Deque<String> lines = reader.readItemLines();
         assertThat(lines, hasSize(4));

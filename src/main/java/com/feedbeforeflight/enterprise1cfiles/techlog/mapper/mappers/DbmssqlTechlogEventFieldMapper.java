@@ -1,12 +1,17 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.DbmssqlTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.AbstractTechlogEventFieldMapper;
 
 import java.util.Map;
 
 public class DbmssqlTechlogEventFieldMapper extends AbstractTechlogEventFieldMapper {
+
+    public static TechlogEventType classType() {
+        return TechlogEventType.DBMSSQL;
+    }
 
     @Override
     protected void mapSpecificFields(AbstractTechlogEvent event, Map<String, String> parameters, AbstractTechlogEvent prevEvent) {
@@ -16,7 +21,7 @@ public class DbmssqlTechlogEventFieldMapper extends AbstractTechlogEventFieldMap
             switch (key) {
                 case "Trans" -> specificEvent.setTransaction(Short.valueOf(removeQuotes(value)));
                 case "dbpid" -> specificEvent.setDbPid(Integer.valueOf(removeQuotes(value)));
-                case "sql" -> specificEvent.setSql(removeQuotes(value));
+                case "Sql" -> specificEvent.setSql(removeQuotes(value));
                 case "planSQLText" -> specificEvent.setPlanSqlText(removeQuotes(value));
             }
         });
