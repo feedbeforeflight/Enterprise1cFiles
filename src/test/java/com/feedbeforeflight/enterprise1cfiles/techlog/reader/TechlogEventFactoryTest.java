@@ -2,10 +2,7 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.ContextTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TdeadlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -20,11 +17,12 @@ class TechlogEventFactoryTest {
     void createObject_ShouldCollectAllConcreteEventClasses() {
         TechlogEventFactory factory = new TechlogEventFactory("cluster", "server");
 
-        assertThat(factory.getEventClasses().size(), equalTo(4));
+        assertThat(factory.getEventClasses().size(), equalTo(5));
         assertThat(factory.getEventClasses().get(TechlogEventType.CONTEXT), is(ContextTechlogEvent.class));
         assertThat(factory.getEventClasses().get(TechlogEventType.TDEADLOCK), is(TdeadlockTechlogEvent.class));
         assertThat(factory.getEventClasses().get(TechlogEventType.TLOCK), is(TlockTechlogEvent.class));
         assertThat(factory.getEventClasses().get(TechlogEventType.TTIMEOUT), is(TtimeoutTechlogEvent.class));
+        assertThat(factory.getEventClasses().get(TechlogEventType.DBMSSQL), is(DbmssqlTechlogEvent.class));
     }
 
     @Test
