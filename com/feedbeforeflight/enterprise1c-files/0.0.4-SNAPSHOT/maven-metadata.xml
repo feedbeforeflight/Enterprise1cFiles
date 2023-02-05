@@ -2,23 +2,23 @@
 <metadata modelVersion="1.1.0">
   <groupId>com.feedbeforeflight</groupId>
   <artifactId>enterprise1c-files</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.4-SNAPSHOT</version>
   <versioning>
     <snapshot>
-      <timestamp>20230205.141121</timestamp>
-      <buildNumber>3</buildNumber>
+      <timestamp>20230205.142132</timestamp>
+      <buildNumber>1</buildNumber>
     </snapshot>
-    <lastUpdated>20230205141121</lastUpdated>
+    <lastUpdated>20230205142132</lastUpdated>
     <snapshotVersions>
       <snapshotVersion>
         <extension>jar</extension>
-        <value>0.0.3-20230205.141121-3</value>
-        <updated>20230205141121</updated>
+        <value>0.0.4-20230205.142132-1</value>
+        <updated>20230205142132</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>pom</extension>
-        <value>0.0.3-20230205.141121-3</value>
-        <updated>20230205141121</updated>
+        <value>0.0.4-20230205.142132-1</value>
+        <updated>20230205142132</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
