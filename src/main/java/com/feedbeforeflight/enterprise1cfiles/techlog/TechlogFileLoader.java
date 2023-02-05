@@ -45,13 +45,11 @@ public class TechlogFileLoader {
                 List<String> tokens = TechlogFileFieldTokenizer.readEventTokens(lines);
                 Map<String, String> parameters = TechlogItemProcessor.process(tokens, description, reader.getLineNumber());
                 event = factory.createEvent(parameters, event);
-                if (description.getLastLoadedEventTimestamp() == null ||
-                        event.getTimestamp().isAfter(description.getLastLoadedEventTimestamp())) {
+                if (event != null && (description.getLastLoadedEventTimestamp() == null ||
+                        event.getTimestamp().isAfter(description.getLastLoadedEventTimestamp()))) {
                     writer.writeItem(event);
 
-                    if (event != null) {
-                        summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
-                    }
+                    summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
                 }
                 else {skipped++;}
 
