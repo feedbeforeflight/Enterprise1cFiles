@@ -58,6 +58,14 @@ class TechlogEventFactoryTest {
         parameters.put("_type", "TTIMEOUT");
         event = factory.createEvent(parameters, null);
         assertThat(event, is(instanceOf(TtimeoutTechlogEvent.class)));
+
+        parameters.put("_type", "CONFLOADFROMFILES");
+        event = factory.createEvent(parameters, null);
+        assertThat(event, nullValue());
+
+        parameters.put("_type", "THISEVENTTYPEWILLNEVERBEUSED");
+        event = factory.createEvent(parameters, null);
+        assertThat(event, nullValue());
     }
 
 }
