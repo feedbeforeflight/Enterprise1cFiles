@@ -61,6 +61,9 @@ public class TechlogEventFactory {
 
     private AbstractTechlogEvent getEventByType(TechlogEventType type) {
         Class<? extends AbstractTechlogEvent> eventClass = eventClasses.get(type);
+        if (eventClass == null) {
+            return null;
+        }
         try {
             return eventClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -72,6 +75,9 @@ public class TechlogEventFactory {
     public AbstractTechlogEvent createEvent(Map<String, String> parameters, AbstractTechlogEvent prevEvent) {
 
         TechlogEventType eventType = TechlogEventType.getByName(parameters.get("_type"));
+        if (eventType == null) {
+            return null;
+        }
 
         AbstractTechlogEvent event = getEventByType(eventType);
         if (event == null) {
