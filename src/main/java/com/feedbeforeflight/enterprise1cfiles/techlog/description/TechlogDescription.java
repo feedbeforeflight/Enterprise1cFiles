@@ -22,7 +22,7 @@ public class TechlogDescription {
     @Getter
     private final String serverName;
     @Getter
-    private final Map<String, TechlogProcessDirectoryProcessor> directories;
+    private final Map<String, TechlogDirectoryDescription> directoryProcessors;
     private final TechlogItemWriter writer;
 
     public TechlogDescription(String pathName, String groupName, String serverName, TechlogItemWriter writer) {
@@ -30,28 +30,38 @@ public class TechlogDescription {
         this.groupName = groupName;
         this.serverName = serverName;
         this.writer = writer;
-        this.directories = new HashMap<>();
+        this.directoryProcessors = new HashMap<>();
     }
 
-    public void refreshFiles() throws IOException {
+    public void readFileDescriptions() throws IOException {
         if (pathName.isEmpty()) {
             throw (new IOException("Log path should not be empty"));
         }
 
-        directories.clear();
+        directoryProcessors.values().forEach(techlogDirectoryDescription -> techlogDirectoryDescription.setDirectoryDeleted(true));
 
         Path path = Paths.get(pathName);
         try (Stream<Path> directoryStream = Files.find(path, 1, (p, attr) -> attr.isDirectory())) {
-            directoryStream.skip(1).forEach(this::appendDirectory);
+            directoryStream.skip(1).forEach(this::readDirectory);
         } catch (IOException e) {
             log.debug("Error listing log directory:", e);
         }
+
+        directoryProcessors.entrySet().stream().filter(entry -> entry.getValue().isDirectoryDeleted()).
+                forEach(entry -> directoryProcessors.remove(entry.getKey()));
     }
 
-    private void appendDirectory(Path directoryPath) {
-        TechlogProcessDirectoryProcessor directoryProcessor = new TechlogProcessDirectoryProcessor(directoryPath, groupName, serverName, writer);
-        directoryProcessor.refreshFiles();
-        this.directories.put(directoryPath.getFileName().toString(), directoryProcessor);
+    private void readDirectory(Path directoryPath) {
+        String pathString = directoryPath.getFileName().toString();
+        TechlogDirectoryDescription directoryProcessor = directoryProcessors.get(pathString);
+        if (directoryProcessor == null) {
+            directoryProcessor = new TechlogDirectoryDescription(directoryPath, groupName, serverName, writer);
+            this.directoryProcessors.put(pathString, directoryProcessor);
+        }
+        else {
+            directoryProcessor.setDirectoryDeleted(false);
+        }
+        directoryProcessor.readLogfileDescriptions();
     }
 
 }

@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @Slf4j
-public class TechlogFileDescription {
+public class TechlogFileDescription implements Comparable<TechlogFileDescription>{
 
     @Getter
     private final Path path;
@@ -28,14 +28,28 @@ public class TechlogFileDescription {
     @Getter
     private final String id;
     @Getter
-    private Date timestamp;
+    private final Date timestamp;
     @Getter
     private final String hourString;
 //    @Getter @Setter
 //    private int linesRead = 0;
 
+    @Getter
+    private Date lastRead;
+
     @Getter @Setter
     private Instant lastLoadedEventTimestamp;
+
+    @Getter @Setter
+    private boolean fileDeleted;
+
+    public static String createFileId(Path path, TechlogProcessType processType, int processId) {
+        return processType.getName() + "_" + processId + "_" + extractHourString(path);
+    }
+
+    private static String extractHourString(Path path) {
+        return path.getFileName().toString().substring(0, 8);
+    }
 
     public TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName, TechlogItemWriter writer) {
         this.path = path;
@@ -44,16 +58,25 @@ public class TechlogFileDescription {
         this.serverName = serverName;
         this.groupName = groupName;
 
-        hourString = path.getFileName().toString().substring(0, 8);
-        id = processType.getName() + "_" + processId + "_" + hourString;
+        hourString = extractHourString(path);
+        id = createFileId(path, processType, processId);
 
 //        linesRead = writer.getLinesLoaded(id);
 
         try {
-            timestamp = new SimpleDateFormat("yyMMddkk").parse(hourString);
+            this.timestamp = new SimpleDateFormat("yyMMddkk").parse(hourString);
         } catch (ParseException e) {
             log.error("Error parsing log file timestamp from filename: [{}]", hourString);
+            throw new IllegalArgumentException("Bad hour string from filename: " + path.getFileName().toString(), e);
         }
     }
 
+    public void updateLastRead() {
+        lastRead = new Date();
+    }
+
+    @Override
+    public int compareTo(TechlogFileDescription o) {
+        return timestamp.compareTo(o.getTimestamp());
+    }
 }

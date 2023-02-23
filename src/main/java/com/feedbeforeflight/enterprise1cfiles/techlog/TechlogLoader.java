@@ -1,6 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogProcessDirectoryProcessor;
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogDirectoryDescription;
 import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogDescription;
 import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
@@ -21,13 +21,13 @@ public class TechlogLoader {
 
     public void load() {
         try {
-            techlogDescription.refreshFiles();
+            techlogDescription.readFileDescriptions();
         } catch (IOException e) {
             log.error("Error refreshing files", e);
             return;
         }
 
-        for (TechlogProcessDirectoryProcessor directoryProcessor : techlogDescription.getDirectories().values()) {
+        for (TechlogDirectoryDescription directoryProcessor : techlogDescription.getDirectoryProcessors().values()) {
             log.info("reading directory for process {} with pid {}", directoryProcessor.getProcessType(), directoryProcessor.getProcessId());
 
             for (TechlogFileDescription fileDescription : directoryProcessor.getFiles().values()) {
