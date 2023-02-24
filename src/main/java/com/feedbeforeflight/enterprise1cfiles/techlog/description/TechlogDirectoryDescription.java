@@ -64,7 +64,9 @@ public class TechlogDirectoryDescription {
             return;
         }
 
-        files.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).
+//        files.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).
+//                forEach(entry -> files.remove(entry.getKey()));
+        files.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).toList().
                 forEach(entry -> files.remove(entry.getKey()));
 
         checkEventsLoadedAlreadyByPortions(newlyDiscoveredDescriptions);
@@ -91,7 +93,7 @@ public class TechlogDirectoryDescription {
             return;
         }
 
-        String fileId = TechlogFileDescription.createFileId(path, processType, processId);
+        String fileId = TechlogFileDescription.createFileId(filePath, processType, processId);
         files.computeIfAbsent(fileId, s -> {
             TechlogFileDescription newTechlogFileDescription = new TechlogFileDescription(filePath, processType, processId, groupName, serverName, writer);
             newlyDiscoveredDescriptions.add(newTechlogFileDescription);
