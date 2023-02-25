@@ -28,7 +28,7 @@ public class TechlogLoader {
         }
 
         for (TechlogDirectoryDescription directoryDescription : techlogDescription.directories()) {
-            log.info("reading directory for process {} with pid {}", directoryDescription.getProcessType(), directoryDescription.getProcessId());
+            log.debug("reading directory for process {} with pid {}", directoryDescription.getProcessType(), directoryDescription.getProcessId());
 
             for (TechlogFileDescription fileDescription : directoryDescription.files()) {
                 new TechlogFileLoader(writer, fileDescription).loadFile();

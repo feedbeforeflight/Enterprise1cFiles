@@ -1,7 +1,9 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.description;
+package com.feedbeforeflight.enterprise1cfiles.techlog;
 
+import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
+import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
@@ -12,72 +14,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
-import java.util.Date;
+import java.util.EnumMap;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-class TechlogFileDescriptionTest {
-
-    private Path getTestPath() {
-        return getTestPath("22122311");
-    }
-
-    private Path getTestPath(String fileName) {
-        return Paths.get("c:\\temp\\rphost_4188\\" + fileName + ".log");
-    }
-
-    @Test
-    void createFileId_ShouldMakeCorrectId() {
-        String fileId = TechlogFileDescription.createFileId(getTestPath(), TechlogProcessType.RPHOST, 4188);
-
-        assertThat(fileId, equalTo("rphost_4188_22122311"));
-    }
-
-    @Test
-    void compareTo_ShouldCorrectlyCompareDescriptionsByTimestamp() {
-        TechlogFileDescription description1 = new TechlogFileDescription(getTestPath("22122312"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
-        TechlogFileDescription description2 = new TechlogFileDescription(getTestPath("22122313"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
-        TechlogFileDescription description3 = new TechlogFileDescription(getTestPath("22122411"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
-        TechlogFileDescription description4 = new TechlogFileDescription(getTestPath("22122411"),
-                TechlogProcessType.RPHOST, 3254, "main_group", "test_server", null);
-
-        assertThat(description1.compareTo(description2), lessThan(0));
-        assertThat(description1.compareTo(description3), lessThan(0));
-        assertThat(description3.compareTo(description2), greaterThan(0));
-        assertThat(description3.compareTo(description4), equalTo(0));
-    }
-    @Test
-    void updateLastRead_ShouldSetLastReadTimestampToCurrentTime() {
-        TechlogFileDescription description = new TechlogFileDescription(getTestPath("22122312"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
-
-        assertThat(description.getLastRead(), nullValue());
-
-        Instant marker = Instant.now();
-        description.updateLastRead();
-        assertThat(description.getLastRead(), notNullValue());
-        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
-    }
-
-    @Test
-    void fileWasModified_ShouldDetectFileModificationDateChange(@TempDir Path tempPath) throws IOException {
-        Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
-        Files.createDirectory(directoryPath);
-        Path filePath = createAndFillLogfile(directoryPath, "22122315.log", fileContent[0], 4188);
-
-        TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
-        TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
-                4188, "main_group", "test_server", writer);
-        assertThat("File expected to be modified", description.modifiedSinceLoad());
-        description.updateLastRead();
-        assertThat("File expected to be not modified", !description.modifiedSinceLoad());
-        Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
-        assertThat("File expected to be modified", description.modifiedSinceLoad());
-    }
+class TechlogFileLoaderTest {
 
     private Path createAndFillLogfile(Path directoryPath, String name, String content, int processId) throws IOException {
         Path filePath = Paths.get(directoryPath.toString(), name);
@@ -87,7 +29,43 @@ class TechlogFileDescriptionTest {
         }
         return filePath;
     }
-    
+
+    private void deleteLogFile(Path directoryPath, String name) throws IOException {
+        Path filePath = Paths.get(directoryPath.toString(), name);
+        Files.delete(filePath);
+    }
+
+    @Test
+    void loadFile_shouldLoadNewLinesOnly(@TempDir Path tempPath) throws IOException {
+
+        Instant marker = Instant.now();
+
+        Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
+        Files.createDirectory(directoryPath);
+        Path filePath = createAndFillLogfile(directoryPath, "22122315.log", fileContent[0], 4188);
+        Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
+
+        TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
+        TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
+                4188, "main_group", "test_server", writer);
+        TechlogFileLoader loader = new TechlogFileLoader(writer, description);
+        EnumMap<TechlogEventType, Integer> stats = loader.loadFile();
+
+        assertThat(stats.size(), equalTo(1));
+        assertThat(stats.get(TechlogEventType.TLOCK), equalTo(2));
+        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
+        assertThat(description.getLinesRead(), equalTo(5));
+
+        marker = Instant.now();
+        Files.writeString(filePath, fileContent[2], StandardOpenOption.APPEND);
+        stats = loader.loadFile();
+
+        assertThat(stats.size(), equalTo(1));
+        assertThat(stats.get(TechlogEventType.TLOCK), equalTo(1));
+        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
+        assertThat(description.getLinesRead(), equalTo(8));
+    }
+
     String[] fileContent = new String[]{
             "02:01.596016-3,TLOCK,4,process=rphost,p:processName=upp,OSThread=4232,t:clientID=2505,t:applicationName=1CV8,t:computerName=rds-01-01,t:connectID=5427,SessionID=13955,Usr=Петров Петр Петрович,Txt=Transaction lock - request. Lock space Document30456.REFLOCK.,Regions=Document30456.REFLOCK,Locks='Document30456.REFLOCK Exclusive ID=30456:88f5005056874e2011ea62965ce86463',WaitConnections=,Context=Форма.Записать : Документ.мтоКорректировкаГКПЗ.Форма.ФормаДокумента\n",
             "02:04.314019-3,TLOCK,4,process=rphost,p:processName=upp,OSThread=4232,t:clientID=2505,t:applicationName=1CV8,t:computerName=rds-01-01,t:connectID=5427,SessionID=13955,Usr=Петров Петр Петрович,Txt=Transaction lock - request. Lock space InfoRg20642.DIMS.,Regions=InfoRg20642.DIMS,Locks='InfoRg20642.DIMS Shared Fld20643=\"мтоКорректировкаГКПЗ\"',WaitConnections=,Context='Форма.Записать : Документ.мтоКорректировкаГКПЗ.Форма.ФормаДокумента\n" +

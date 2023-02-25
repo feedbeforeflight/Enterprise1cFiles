@@ -29,16 +29,20 @@ public class TechlogFileLoader {
         this.description = description;
     }
 
-    public void loadFile() {
+    public EnumMap<TechlogEventType, Integer> loadFile() {
 
         TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
         AbstractTechlogEvent event = null;
         try (TechlogFileReader reader = new TechlogFileReader(description)) {
             reader.openFile();
-            log.info("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
+            description.updateLastRead();
+            summary.clear();
+            log.debug("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
-//            skipped = reader.getSkippedLines();
-            skipped = 0;
+            skipped = description.getLinesRead();
+            if (skipped > 0) {
+                reader.skipToLine(skipped);
+            };
 
             Deque<String> lines = reader.readItemLines();
             while(!lines.isEmpty()) {
@@ -52,9 +56,11 @@ public class TechlogFileLoader {
                     summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
                 }
                 else {skipped++;}
+                description.setLinesRead(reader.getLineNumber() - (reader.EOF() ? 0 : 1));
 
                 lines = reader.readItemLines();
             }
+            reader.closeFile();
         } catch (IOException e) {
             log.error("Something gone wrong while reading file " + description.getId(), e);
         }
@@ -62,13 +68,15 @@ public class TechlogFileLoader {
         log.info("-- skipped {} events", skipped);
         log.info("-- loaded:");
         for (TechlogEventType eventType : summary.keySet()) {
-            log.info("--- {} - {} events", eventType, summary.get(eventType));
+            log.debug("--- {} - {} events", eventType, summary.get(eventType));
         }
         if (summary.isEmpty()) {
-            log.info("--- nothing");
+            log.debug("--- nothing");
+        } else {
+            writer.loadFinished(description.getId());  // let writer know, that we've finished
         }
 
-        writer.loadFinished(description.getId());  // create event for file loaded (fire only if something read)
+        return summary;
     }
 
 }

@@ -2,11 +2,17 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.description;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -31,15 +37,12 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
     private final Date timestamp;
     @Getter
     private final String hourString;
-//    @Getter @Setter
-//    private int linesRead = 0;
-
+    @Getter @Setter
+    private int linesRead = 0;
     @Getter
-    private Date lastRead;
-
+    private Instant lastRead;
     @Getter @Setter
     private Instant lastLoadedEventTimestamp;
-
     @Getter @Setter
     private boolean fileDeleted;
 
@@ -72,11 +75,30 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
     }
 
     public void updateLastRead() {
-        lastRead = new Date();
+        lastRead = Instant.now();
+    }
+
+    public boolean modifiedSinceLoad() {
+        if (lastRead == null) {
+            return true;
+        }
+        Instant fileModified = fileModified();
+        return fileModified == null ? false : lastRead.isBefore(fileModified);
+    }
+
+    private Instant fileModified() {
+        try {
+            return Files.getFileAttributeView(path, BasicFileAttributeView.class).
+                    readAttributes().lastModifiedTime().toInstant();
+        } catch (IOException e) {
+            log.error("Failed to read attributes for file: " + path.toString(), e);
+            return null;
+        }
     }
 
     @Override
     public int compareTo(TechlogFileDescription o) {
         return timestamp.compareTo(o.getTimestamp());
     }
+
 }
