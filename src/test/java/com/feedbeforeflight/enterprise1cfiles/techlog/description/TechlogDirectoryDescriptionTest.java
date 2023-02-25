@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -61,7 +60,7 @@ class TechlogDirectoryDescriptionTest {
         Mockito.verify(writer, Mockito.times(1)).getLastProgressBatch(progressBatchCaptor.capture());
         List<String> idList = progressBatchCaptor.getValue();
         assertThat(idList, hasSize(3)); // file #2 ignored as it contains only BOM
-        assertThat(directoryDescription.getFiles().get(fileId3).getLastLoadedEventTimestamp(), equalTo(referenceLastRecordTimestamp));
+        assertThat(directoryDescription.getFileDescription(fileId3).getLastLoadedEventTimestamp(), equalTo(referenceLastRecordTimestamp));
     }
 
     @Test
@@ -79,21 +78,21 @@ class TechlogDirectoryDescriptionTest {
                 "main_group", "test_server", writer);
         directoryDescription.readLogfileDescriptions();
 
-        assertThat(directoryDescription.getFiles().size(), equalTo(2));
+        assertThat(directoryDescription.size(), equalTo(2));
 
-        TechlogFileDescription description1 = directoryDescription.getFiles().get(fileId1);
-        TechlogFileDescription description3 = directoryDescription.getFiles().get(fileId3);
+        TechlogFileDescription description1 = directoryDescription.getFileDescription(fileId1);
+        TechlogFileDescription description3 = directoryDescription.getFileDescription(fileId3);
 
         createAndFillLogfile(directoryPath, "22122313.log", "52:52.971015-0,EXCP,2,process=rphost", 4188);
         directoryDescription.readLogfileDescriptions();
 
-        assertThat(directoryDescription.getFiles().size(), equalTo(3));
-        assertThat(directoryDescription.getFiles().get(fileId1), sameInstance(description1));
-        assertThat(directoryDescription.getFiles().get(fileId3), sameInstance(description3));
+        assertThat(directoryDescription.size(), equalTo(3));
+        assertThat(directoryDescription.getFileDescription(fileId1), sameInstance(description1));
+        assertThat(directoryDescription.getFileDescription(fileId3), sameInstance(description3));
     }
 
     @Test
-    void readLogfileDescriptions_ShouldRemoveDeletedFilesAndDirectories(@TempDir Path tempPath) throws IOException {
+    void readLogfileDescriptions_ShouldRemoveDeletedFiles(@TempDir Path tempPath) throws IOException {
         Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
         Files.createDirectory(directoryPath);
         createAndFillLogfile(directoryPath, "22122314.log", "03:54.025014-0,EXCP,2,process=rphost", 4188);
@@ -107,16 +106,16 @@ class TechlogDirectoryDescriptionTest {
                 "main_group", "test_server", writer);
         directoryDescription.readLogfileDescriptions();
 
-        assertThat(directoryDescription.getFiles().size(), equalTo(3));
-        TechlogFileDescription description3 = directoryDescription.getFiles().get(fileId3);
-        TechlogFileDescription description4 = directoryDescription.getFiles().get(fileId4);
+        assertThat(directoryDescription.size(), equalTo(3));
+        TechlogFileDescription description3 = directoryDescription.getFileDescription(fileId3);
+        TechlogFileDescription description4 = directoryDescription.getFileDescription(fileId4);
 
         deleteLogFile(directoryPath, "22122314.log");
         directoryDescription.readLogfileDescriptions();
 
-        assertThat(directoryDescription.getFiles().size(), equalTo(2));
-        assertThat(directoryDescription.getFiles().get(fileId3), sameInstance(description3));
-        assertThat(directoryDescription.getFiles().get(fileId4), sameInstance(description4));
+        assertThat(directoryDescription.size(), equalTo(2));
+        assertThat(directoryDescription.getFileDescription(fileId3), sameInstance(description3));
+        assertThat(directoryDescription.getFileDescription(fileId4), sameInstance(description4));
     }
 
 }

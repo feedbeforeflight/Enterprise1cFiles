@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -21,8 +23,7 @@ public class TechlogDescription {
     private final String groupName;
     @Getter
     private final String serverName;
-    @Getter
-    private final Map<String, TechlogDirectoryDescription> directoryProcessors;
+    private final Map<String, TechlogDirectoryDescription> directoryDescriptions;
     private final TechlogItemWriter writer;
 
     public TechlogDescription(String pathName, String groupName, String serverName, TechlogItemWriter writer) {
@@ -30,7 +31,7 @@ public class TechlogDescription {
         this.groupName = groupName;
         this.serverName = serverName;
         this.writer = writer;
-        this.directoryProcessors = new HashMap<>();
+        this.directoryDescriptions = new HashMap<>();
     }
 
     public void readFileDescriptions() throws IOException {
@@ -38,7 +39,7 @@ public class TechlogDescription {
             throw (new IOException("Log path should not be empty"));
         }
 
-        directoryProcessors.values().forEach(techlogDirectoryDescription -> techlogDirectoryDescription.setDirectoryDeleted(true));
+        directoryDescriptions.values().forEach(techlogDirectoryDescription -> techlogDirectoryDescription.setDirectoryDeleted(true));
 
         Path path = Paths.get(pathName);
         try (Stream<Path> directoryStream = Files.find(path, 1, (p, attr) -> attr.isDirectory())) {
@@ -47,21 +48,33 @@ public class TechlogDescription {
             log.debug("Error listing log directory:", e);
         }
 
-        directoryProcessors.entrySet().stream().filter(entry -> entry.getValue().isDirectoryDeleted()).
-                forEach(entry -> directoryProcessors.remove(entry.getKey()));
+        directoryDescriptions.entrySet().stream().filter(entry -> entry.getValue().isDirectoryDeleted()).toList().
+                forEach(entry -> directoryDescriptions.remove(entry.getKey()));
     }
 
     private void readDirectory(Path directoryPath) {
         String pathString = directoryPath.getFileName().toString();
-        TechlogDirectoryDescription directoryProcessor = directoryProcessors.get(pathString);
+        TechlogDirectoryDescription directoryProcessor = directoryDescriptions.get(pathString);
         if (directoryProcessor == null) {
             directoryProcessor = new TechlogDirectoryDescription(directoryPath, groupName, serverName, writer);
-            this.directoryProcessors.put(pathString, directoryProcessor);
+            this.directoryDescriptions.put(pathString, directoryProcessor);
         }
         else {
             directoryProcessor.setDirectoryDeleted(false);
         }
         directoryProcessor.readLogfileDescriptions();
+    }
+
+    public int size() {
+        return directoryDescriptions.size();
+    }
+
+    public TechlogDirectoryDescription get(String name) {
+        return directoryDescriptions.get(name);
+    }
+
+    public List<TechlogDirectoryDescription> directories() {
+        return new ArrayList<>(directoryDescriptions.values());
     }
 
 }

@@ -27,10 +27,10 @@ public class TechlogLoader {
             return;
         }
 
-        for (TechlogDirectoryDescription directoryProcessor : techlogDescription.getDirectoryProcessors().values()) {
-            log.info("reading directory for process {} with pid {}", directoryProcessor.getProcessType(), directoryProcessor.getProcessId());
+        for (TechlogDirectoryDescription directoryDescription : techlogDescription.directories()) {
+            log.info("reading directory for process {} with pid {}", directoryDescription.getProcessType(), directoryDescription.getProcessId());
 
-            for (TechlogFileDescription fileDescription : directoryProcessor.getFiles().values()) {
+            for (TechlogFileDescription fileDescription : directoryDescription.files()) {
                 new TechlogFileLoader(writer, fileDescription).loadFile();
             }
         }

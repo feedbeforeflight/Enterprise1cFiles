@@ -2,6 +2,7 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.description;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,11 @@ public class TechlogDirectoryDescription {
     private final String groupName;
     @Getter
     private final String serverName;
-    @Getter
-    private final Map<String, TechlogFileDescription> files;
+    private final Map<String, TechlogFileDescription> fileDescriptions;
     private final TechlogItemWriter writer;
     private final Integer fileLastProgressRequestPacketSize = 10;
-    @Getter @Setter
-    private boolean directoryDeleted;
+    @Getter @Setter(AccessLevel.PACKAGE)
+    protected boolean directoryDeleted;
 
     public TechlogDirectoryDescription(Path path, String groupName, String serverName, TechlogItemWriter writer) {
         this.path = path;
@@ -50,11 +50,11 @@ public class TechlogDirectoryDescription {
         this.processType = TechlogProcessType.getByName(tags[0]);
         this.processId = Integer.parseInt(tags[1]);
 
-        files = new HashMap<>();
+        fileDescriptions = new HashMap<>();
     }
 
     public void readLogfileDescriptions() {
-        files.values().forEach(techlogFileDescription -> techlogFileDescription.setFileDeleted(true));
+        fileDescriptions.values().forEach(techlogFileDescription -> techlogFileDescription.setFileDeleted(true));
         List<TechlogFileDescription> newlyDiscoveredDescriptions = new ArrayList<>();
 
         try (Stream<Path> pathStream = Files.find(path, 1, (p, attr) -> p.getFileName().toString().endsWith(".log"))) {
@@ -66,8 +66,8 @@ public class TechlogDirectoryDescription {
 
 //        files.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).
 //                forEach(entry -> files.remove(entry.getKey()));
-        files.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).toList().
-                forEach(entry -> files.remove(entry.getKey()));
+        fileDescriptions.entrySet().stream().filter(entry -> entry.getValue().isFileDeleted()).toList().
+                forEach(entry -> fileDescriptions.remove(entry.getKey()));
 
         checkEventsLoadedAlreadyByPortions(newlyDiscoveredDescriptions);
     }
@@ -81,7 +81,7 @@ public class TechlogDirectoryDescription {
         descriptionPortions.forEach((key, value) -> {
             Map<String, Instant> lastProgressBatchResult = writer.getLastProgressBatch(
                     value.stream().map(TechlogFileDescription::getId).collect(Collectors.toList()));
-            lastProgressBatchResult.forEach((s, instant) -> files.get(s).setLastLoadedEventTimestamp(instant));
+            lastProgressBatchResult.forEach((s, instant) -> fileDescriptions.get(s).setLastLoadedEventTimestamp(instant));
         });
     }
 
@@ -94,11 +94,23 @@ public class TechlogDirectoryDescription {
         }
 
         String fileId = TechlogFileDescription.createFileId(filePath, processType, processId);
-        files.computeIfAbsent(fileId, s -> {
+        fileDescriptions.computeIfAbsent(fileId, s -> {
             TechlogFileDescription newTechlogFileDescription = new TechlogFileDescription(filePath, processType, processId, groupName, serverName, writer);
             newlyDiscoveredDescriptions.add(newTechlogFileDescription);
             return newTechlogFileDescription;
         }).setFileDeleted(false);
+    }
+
+    public int size() {
+        return fileDescriptions.size();
+    }
+
+    public TechlogFileDescription getFileDescription(String id) {
+        return fileDescriptions.get(id);
+    }
+
+    public List<TechlogFileDescription> files() {
+        return new ArrayList<>(fileDescriptions.values());
     }
 
 }
