@@ -39,7 +39,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
     private final String hourString;
     @Getter @Setter
     private int linesRead = 0;
-    @Getter
+    //@Getter
     private Instant lastRead;
     @Getter @Setter
     private Instant lastLoadedEventTimestamp;
@@ -74,11 +74,15 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
         }
     }
 
-    public void updateLastRead() {
+    synchronized public void updateLastRead() {
         lastRead = Instant.now();
     }
 
-    public boolean modifiedSinceLoad() {
+    synchronized public Instant getLastRead() {
+        return lastRead;
+    }
+
+    synchronized public boolean modifiedSinceLoad() {
         if (lastRead == null) {
             return true;
         }

@@ -7,6 +7,9 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class TechlogLoader {
@@ -31,7 +34,7 @@ public class TechlogLoader {
             log.debug("reading directory for process {} with pid {}", directoryDescription.getProcessType(), directoryDescription.getProcessId());
 
             for (TechlogFileDescription fileDescription : directoryDescription.files()) {
-                new TechlogFileLoader(writer, fileDescription).loadFile();
+                TechlogFileLoader.load(writer, fileDescription);
             }
         }
     }

@@ -19,24 +19,15 @@ import java.util.Map;
 @Slf4j
 public class TechlogFileLoader {
 
-    private final TechlogItemWriter writer;
-    private final TechlogFileDescription description;
-    private EnumMap<TechlogEventType, Integer> summary = new EnumMap<TechlogEventType, Integer>(TechlogEventType.class);
-    private int skipped = 0;
-
-    public TechlogFileLoader(TechlogItemWriter writer, TechlogFileDescription description) {
-        this.writer = writer;
-        this.description = description;
-    }
-
-    public EnumMap<TechlogEventType, Integer> loadFile() {
+    public static EnumMap<TechlogEventType, Integer> load(TechlogItemWriter writer, TechlogFileDescription description) {
+        int skipped = 0;
+        EnumMap<TechlogEventType, Integer> summary = new EnumMap<>(TechlogEventType.class);
 
         TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
         AbstractTechlogEvent event = null;
         try (TechlogFileReader reader = new TechlogFileReader(description)) {
             reader.openFile();
             description.updateLastRead();
-            summary.clear();
             log.debug("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
             skipped = description.getLinesRead();
@@ -73,7 +64,7 @@ public class TechlogFileLoader {
         if (summary.isEmpty()) {
             log.debug("--- nothing");
         } else {
-            writer.loadFinished(description.getId());  // let writer know, that we've finished
+            writer.loadFinished(description.getId());  // let writer know, that we've done
         }
 
         return summary;

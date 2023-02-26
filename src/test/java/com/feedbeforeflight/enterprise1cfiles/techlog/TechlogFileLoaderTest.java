@@ -48,8 +48,7 @@ class TechlogFileLoaderTest {
         TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
         TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
                 4188, "main_group", "test_server", writer);
-        TechlogFileLoader loader = new TechlogFileLoader(writer, description);
-        EnumMap<TechlogEventType, Integer> stats = loader.loadFile();
+        EnumMap<TechlogEventType, Integer> stats = TechlogFileLoader.load(writer, description);
 
         assertThat(stats.size(), equalTo(1));
         assertThat(stats.get(TechlogEventType.TLOCK), equalTo(2));
@@ -58,7 +57,7 @@ class TechlogFileLoaderTest {
 
         marker = Instant.now();
         Files.writeString(filePath, fileContent[2], StandardOpenOption.APPEND);
-        stats = loader.loadFile();
+        stats = TechlogFileLoader.load(writer, description);
 
         assertThat(stats.size(), equalTo(1));
         assertThat(stats.get(TechlogEventType.TLOCK), equalTo(1));
