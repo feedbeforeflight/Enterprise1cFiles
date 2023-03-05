@@ -58,7 +58,7 @@ class TechlogFileDescriptionTest {
         assertThat(description.getLastRead(), nullValue());
 
         Instant marker = Instant.now();
-        description.updateLastRead();
+        description.updateLastRead(Instant.now());
         assertThat(description.getLastRead(), notNullValue());
         assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
     }
@@ -73,7 +73,7 @@ class TechlogFileDescriptionTest {
         TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
                 4188, "main_group", "test_server", writer);
         assertThat("File expected to be modified", description.modifiedSinceLoad());
-        description.updateLastRead();
+        description.updateLastRead(Instant.now());
         assertThat("File expected to be not modified", !description.modifiedSinceLoad());
         Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
         assertThat("File expected to be modified", description.modifiedSinceLoad());

@@ -74,8 +74,8 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
         }
     }
 
-    synchronized public void updateLastRead() {
-        lastRead = Instant.now();
+    synchronized public void updateLastRead(Instant lastRead) {
+        this.lastRead = lastRead;
     }
 
     synchronized public Instant getLastRead() {

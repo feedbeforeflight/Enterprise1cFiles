@@ -11,6 +11,7 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogItemProcesso
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Deque;
 import java.util.EnumMap;
 import java.util.List;
@@ -25,9 +26,10 @@ public class TechlogFileLoader {
 
         TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
         AbstractTechlogEvent event = null;
+        Instant lastRead = Instant.now();
         try (TechlogFileReader reader = new TechlogFileReader(description)) {
             reader.openFile();
-            description.updateLastRead();
+            lastRead = Instant.now();
             log.debug("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
             skipped = description.getLinesRead();
@@ -66,6 +68,7 @@ public class TechlogFileLoader {
         } else {
             writer.loadFinished(description.getId());  // let writer know, that we've done
         }
+        description.updateLastRead(lastRead);
 
         return summary;
     }
