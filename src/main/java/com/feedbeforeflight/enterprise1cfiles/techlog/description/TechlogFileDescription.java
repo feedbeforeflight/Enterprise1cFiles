@@ -54,7 +54,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
         return path.getFileName().toString().substring(0, 8);
     }
 
-    public TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName, TechlogItemWriter writer) {
+    protected TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName, TechlogItemWriter writer) {
         this.path = path;
         this.processType = processType;
         this.processId = processId;
