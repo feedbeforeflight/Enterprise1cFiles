@@ -95,7 +95,7 @@ public class TechlogDirectoryDescription {
 
         String fileId = TechlogFileDescription.createFileId(filePath, processType, processId);
         fileDescriptions.computeIfAbsent(fileId, s -> {
-            TechlogFileDescription newTechlogFileDescription = new TechlogFileDescription(filePath, processType, processId, groupName, serverName, writer);
+            TechlogFileDescription newTechlogFileDescription = new TechlogFileDescription(filePath, processType, processId, groupName, serverName);
             newlyDiscoveredDescriptions.add(newTechlogFileDescription);
             return newTechlogFileDescription;
         }).setFileDeleted(false);

@@ -50,7 +50,7 @@ public class TechlogFileReader implements AutoCloseable {
             }
         }
 
-//        description.setLinesRead(getLineNumber());
+        description.setLinesRead(getLineNumber());
         return result;
     }
 
@@ -58,7 +58,7 @@ public class TechlogFileReader implements AutoCloseable {
         reader = new LineNumberReader(new FileReader(description.getPath().toString(), StandardCharsets.UTF_8));
 
 //        if (description.getLinesRead() > 0) {
-//            skipLines(description.getLinesRead());
+//            skipToLine(description.getLinesRead());
 //        }
 
         recordStartLineBuffer = reader.readLine();

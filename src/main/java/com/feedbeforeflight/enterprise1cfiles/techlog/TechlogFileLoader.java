@@ -35,6 +35,7 @@ public class TechlogFileLoader {
             skipped = description.getLinesRead();
             if (skipped > 0) {
                 reader.skipToLine(skipped);
+                log.debug("- already loaded {}", description.getLinesRead());
             };
 
             Deque<String> lines = reader.readItemLines();

@@ -4,6 +4,7 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -37,13 +38,13 @@ class TechlogFileDescriptionTest {
     @Test
     void compareTo_ShouldCorrectlyCompareDescriptionsByTimestamp() {
         TechlogFileDescription description1 = new TechlogFileDescription(getTestPath("22122312"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
+                TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
         TechlogFileDescription description2 = new TechlogFileDescription(getTestPath("22122313"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
+                TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
         TechlogFileDescription description3 = new TechlogFileDescription(getTestPath("22122411"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
+                TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
         TechlogFileDescription description4 = new TechlogFileDescription(getTestPath("22122411"),
-                TechlogProcessType.RPHOST, 3254, "main_group", "test_server", null);
+                TechlogProcessType.RPHOST, 3254, "main_group", "test_server");
 
         assertThat(description1.compareTo(description2), lessThan(0));
         assertThat(description1.compareTo(description3), lessThan(0));
@@ -53,7 +54,7 @@ class TechlogFileDescriptionTest {
     @Test
     void updateLastRead_ShouldSetLastReadTimestampToCurrentTime() {
         TechlogFileDescription description = new TechlogFileDescription(getTestPath("22122312"),
-                TechlogProcessType.RPHOST, 4188, "main_group", "test_server", null);
+                TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
 
         assertThat(description.getLastRead(), nullValue());
 
@@ -69,11 +70,14 @@ class TechlogFileDescriptionTest {
         Files.createDirectory(directoryPath);
         Path filePath = createAndFillLogfile(directoryPath, "22122315.log", fileContent[0], 4188);
 
-        TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
         TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
-                4188, "main_group", "test_server", writer);
+                4188, "main_group", "test_server");
         assertThat("File expected to be modified", description.modifiedSinceLoad());
         description.updateLastRead(Instant.now());
+
+        Files.readString(filePath);
+        assertThat("Dummy operation to spend some nanoseconds", true);
+
         assertThat("File expected to be not modified", !description.modifiedSinceLoad());
         Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
         assertThat("File expected to be modified", description.modifiedSinceLoad());

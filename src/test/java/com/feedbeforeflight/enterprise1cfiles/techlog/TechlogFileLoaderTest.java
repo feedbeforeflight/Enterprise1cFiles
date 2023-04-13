@@ -47,7 +47,7 @@ class TechlogFileLoaderTest {
 
         TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
         TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
-                4188, "main_group", "test_server", writer);
+                4188, "main_group", "test_server");
         EnumMap<TechlogEventType, Integer> stats = TechlogFileLoader.load(writer, description);
 
         assertThat(stats.size(), equalTo(1));

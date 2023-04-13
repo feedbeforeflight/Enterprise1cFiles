@@ -54,7 +54,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
         return path.getFileName().toString().substring(0, 8);
     }
 
-    protected TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName, TechlogItemWriter writer) {
+    public TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName) {
         this.path = path;
         this.processType = processType;
         this.processId = processId;
@@ -63,8 +63,6 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
 
         hourString = extractHourString(path);
         id = createFileId(path, processType, processId);
-
-//        linesRead = writer.getLinesLoaded(id);
 
         try {
             this.timestamp = new SimpleDateFormat("yyMMddkk").parse(hourString);
