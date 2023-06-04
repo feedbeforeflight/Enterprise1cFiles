@@ -30,12 +30,12 @@ public class TechlogFileLoader {
         try (TechlogFileReader reader = new TechlogFileReader(description)) {
             reader.openFile();
             lastRead = Instant.now();
-            log.debug("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
+            log.info("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
             skipped = description.getLinesRead();
             if (skipped > 0) {
                 reader.skipToLine(skipped);
-                log.debug("- already loaded {}", description.getLinesRead());
+                log.info("- already loaded {}", description.getLinesRead());
             };
 
             Deque<String> lines = reader.readItemLines();
@@ -55,17 +55,17 @@ public class TechlogFileLoader {
                 lines = reader.readItemLines();
             }
             reader.closeFile();
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Something gone wrong while reading file " + description.getId(), e);
         }
 
         log.info("-- skipped {} events", skipped);
         log.info("-- loaded:");
         for (TechlogEventType eventType : summary.keySet()) {
-            log.debug("--- {} - {} events", eventType, summary.get(eventType));
+            log.info("--- {} - {} events", eventType, summary.get(eventType));
         }
         if (summary.isEmpty()) {
-            log.debug("--- nothing");
+            log.info("--- nothing");
         } else {
             writer.loadFinished(description.getId());  // let writer know, that we've done
         }

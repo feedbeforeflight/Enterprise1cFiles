@@ -12,7 +12,7 @@ import java.util.Map;
 @Slf4j
 public abstract class AbstractTechlogEventFieldMapper {
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
+//    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
 
     protected abstract void mapSpecificFields(AbstractTechlogEvent event, Map<String,String> parameters, AbstractTechlogEvent prevEvent);
 
@@ -82,6 +82,7 @@ public abstract class AbstractTechlogEventFieldMapper {
 
     public AbstractTechlogEvent map(AbstractTechlogEvent event, Map<String, String> parameters, AbstractTechlogEvent prevEvent) {
                 event.setLineNumber(Integer.parseInt(parameters.get("_linenumber")));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
 
         try {
             long timepartNanos = Integer.parseInt(parameters.get("_timepart")) * 1000L;
