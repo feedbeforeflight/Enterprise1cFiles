@@ -50,7 +50,7 @@ public class TechlogFileReader implements AutoCloseable {
             }
         }
 
-//        description.setLinesRead(getLineNumber());
+        description.setLinesRead(getLineNumber());
         return result;
     }
 
@@ -58,7 +58,7 @@ public class TechlogFileReader implements AutoCloseable {
         reader = new LineNumberReader(new FileReader(description.getPath().toString(), StandardCharsets.UTF_8));
 
 //        if (description.getLinesRead() > 0) {
-//            skipLines(description.getLinesRead());
+//            skipToLine(description.getLinesRead());
 //        }
 
         recordStartLineBuffer = reader.readLine();
@@ -66,7 +66,6 @@ public class TechlogFileReader implements AutoCloseable {
         if (recordStartLineBuffer != null && recordStartLineBuffer.charAt(0) == '\uFEFF') {
             recordStartLineBuffer = recordStartLineBuffer.substring(1);
         }
-
     }
 
     public void closeFile() throws IOException {
@@ -81,23 +80,30 @@ public class TechlogFileReader implements AutoCloseable {
 
     public int getSkippedLines() { return skippedLines; }
 
-    public void skipLines(int linesCount) {
+    public void skipToLine(int linesCount) {
         if (reader != null) {
-            for (int i = 0; i < linesCount; i++) {
-                try {
-                    reader.readLine();
+            try {
+                for (int i = reader.getLineNumber(); i < linesCount; i++) {
+                    if (reader.readLine() == null) {
+                        break;
+                    }
                     skippedLines++;
-                } catch (IOException e) {
-                    log.error("Exception while skipping lines at file " + description.getId(), e);
                 }
+                recordStartLineBuffer = reader.readLine();
+            } catch (IOException e) {
+                log.error("Exception while skipping lines at file " + description.getId(), e);
             }
-//            reader.setLineNumber(linesCount);
         }
+    }
+
+    public boolean EOF() {
+        return recordStartLineBuffer == null;
     }
 
     @Override
     public void close() {
         try {
+            recordStartLineBuffer = null;
             closeFile();
         }
         catch (IOException exception) {

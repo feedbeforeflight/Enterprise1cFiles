@@ -11,6 +11,7 @@ import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogItemProcesso
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Deque;
 import java.util.EnumMap;
 import java.util.List;
@@ -19,26 +20,23 @@ import java.util.Map;
 @Slf4j
 public class TechlogFileLoader {
 
-    private final TechlogItemWriter writer;
-    private final TechlogFileDescription description;
-    private EnumMap<TechlogEventType, Integer> summary = new EnumMap<TechlogEventType, Integer>(TechlogEventType.class);
-    private int skipped = 0;
-
-    public TechlogFileLoader(TechlogItemWriter writer, TechlogFileDescription description) {
-        this.writer = writer;
-        this.description = description;
-    }
-
-    public void loadFile() {
+    public static EnumMap<TechlogEventType, Integer> load(TechlogItemWriter writer, TechlogFileDescription description) {
+        int skipped = 0;
+        EnumMap<TechlogEventType, Integer> summary = new EnumMap<>(TechlogEventType.class);
 
         TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
         AbstractTechlogEvent event = null;
+        Instant lastRead = Instant.now();
         try (TechlogFileReader reader = new TechlogFileReader(description)) {
             reader.openFile();
+            lastRead = Instant.now();
             log.info("- reading fileID {} timestamp {}", description.getId(), description.getTimestamp());
 
-//            skipped = reader.getSkippedLines();
-            skipped = 0;
+            skipped = description.getLinesRead();
+            if (skipped > 0) {
+                reader.skipToLine(skipped);
+                log.info("- already loaded {}", description.getLinesRead());
+            };
 
             Deque<String> lines = reader.readItemLines();
             while(!lines.isEmpty()) {
@@ -52,10 +50,12 @@ public class TechlogFileLoader {
                     summary.compute(event.getType(), (k, v) -> (v == null) ? 1 : v + 1);
                 }
                 else {skipped++;}
+                description.setLinesRead(reader.getLineNumber() - (reader.EOF() ? 0 : 1));
 
                 lines = reader.readItemLines();
             }
-        } catch (IOException e) {
+            reader.closeFile();
+        } catch (Exception e) {
             log.error("Something gone wrong while reading file " + description.getId(), e);
         }
 
@@ -66,9 +66,12 @@ public class TechlogFileLoader {
         }
         if (summary.isEmpty()) {
             log.info("--- nothing");
+        } else {
+            writer.loadFinished(description.getId());  // let writer know, that we've done
         }
+        description.updateLastRead(lastRead);
 
-        writer.loadFinished(description.getId());  // create event for file loaded (fire only if something read)
+        return summary;
     }
 
 }
