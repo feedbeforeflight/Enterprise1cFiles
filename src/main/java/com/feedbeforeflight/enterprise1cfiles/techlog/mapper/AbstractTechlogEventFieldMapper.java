@@ -110,7 +110,7 @@ public abstract class AbstractTechlogEventFieldMapper {
                 case "p:processName":
                     event.setIbName(value);
                     break;
-                case "t:clientID":
+                case "t:connectID":
                     event.setConnectionID(Integer.parseInt(value));
                     break;
                 case "sessionID":
@@ -119,7 +119,7 @@ public abstract class AbstractTechlogEventFieldMapper {
                 case "Usr":
                     event.setUserName(value);
                     break;
-                case "t:connectID":
+                case "t:clientID":
                     event.setDatabaseSessionID(value);
                     break;
                 case "t:applicationName":

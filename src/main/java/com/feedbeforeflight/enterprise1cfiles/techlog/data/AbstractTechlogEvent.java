@@ -30,11 +30,11 @@ public abstract class AbstractTechlogEvent {
 
     protected String ibName; // p:processName
     protected int sessionID; // sessionID
-    protected int connectionID; // t:clientID
+    protected int connectionID; // t:connectID
     protected String computer; // t:computerName
     protected String application; // t:applicationName, AppID
     protected String userName; // Usr
-    protected String databaseSessionID; // t:connectID
+    protected String databaseSessionID; // t:clientID
 
     protected String context; // Context
 
