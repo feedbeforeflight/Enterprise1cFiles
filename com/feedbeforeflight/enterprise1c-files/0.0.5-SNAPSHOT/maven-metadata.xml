@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>com.feedbeforeflight</groupId>
+  <artifactId>enterprise1c-files</artifactId>
+  <version>0.0.5-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20230717.135634</timestamp>
+      <buildNumber>2</buildNumber>
+    </snapshot>
+    <lastUpdated>20230717135634</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.0.5-20230717.135634-2</value>
+        <updated>20230717135634</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.0.5-20230717.135634-2</value>
+        <updated>20230717135634</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
