@@ -15,7 +15,7 @@ class TechlogEventFactoryTest {
 
     @Test
     void createObject_ShouldCollectAllConcreteEventClasses() {
-        TechlogEventFactory factory = new TechlogEventFactory("cluster", "server");
+        TechlogEventFactory factory = new TechlogEventFactory();
 
         assertThat(factory.getEventClasses().size(), equalTo(5));
         assertThat(factory.getEventClasses().get(TechlogEventType.CONTEXT), is(ContextTechlogEvent.class));
@@ -27,7 +27,7 @@ class TechlogEventFactoryTest {
 
     @Test
     void createEvent_ShouldSucceedForAllImplementedConcreteEventTypes() {
-        TechlogEventFactory factory = new TechlogEventFactory("cluster", "server");
+        TechlogEventFactory factory = new TechlogEventFactory();
         AbstractTechlogEvent event;
 
         Map<String, String> parameters = new HashMap<>();

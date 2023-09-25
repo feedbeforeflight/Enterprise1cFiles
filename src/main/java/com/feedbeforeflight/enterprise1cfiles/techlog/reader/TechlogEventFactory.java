@@ -25,17 +25,10 @@ public class TechlogEventFactory {
     }
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyMMddkk:mm:ss");
-    private final String server; // TODO delete
-    private final String cluster; // TODO delete
     @Getter
     private static final EnumMap<TechlogEventType, AbstractTechlogEventFieldMapper> mappers;
     @Getter
     private static final EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> eventClasses;
-
-    public TechlogEventFactory(String cluster, String server) {
-        this.server = server;
-        this.cluster = cluster;
-    }
 
     private static EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> createClassesMap() {
         EnumMap<TechlogEventType, Class<? extends AbstractTechlogEvent>> result = new EnumMap<>(TechlogEventType.class);
@@ -59,7 +52,7 @@ public class TechlogEventFactory {
         return result;
     }
 
-    private AbstractTechlogEvent getEventByType(TechlogEventType type) {
+    public AbstractTechlogEvent getEventByType(TechlogEventType type) {
         Class<? extends AbstractTechlogEvent> eventClass = eventClasses.get(type);
         if (eventClass == null) {
             return null;

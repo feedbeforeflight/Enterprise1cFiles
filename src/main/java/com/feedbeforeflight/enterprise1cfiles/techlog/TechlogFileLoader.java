@@ -24,7 +24,7 @@ public class TechlogFileLoader {
         int skipped = 0;
         EnumMap<TechlogEventType, Integer> summary = new EnumMap<>(TechlogEventType.class);
 
-        TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
+        TechlogEventFactory factory = new TechlogEventFactory();
         AbstractTechlogEvent event = null;
         Instant lastRead = Instant.now();
         try (TechlogFileReader reader = new TechlogFileReader(description)) {

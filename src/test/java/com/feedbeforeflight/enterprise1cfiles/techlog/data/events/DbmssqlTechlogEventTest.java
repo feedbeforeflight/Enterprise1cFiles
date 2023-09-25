@@ -47,7 +47,7 @@ class DbmssqlTechlogEventTest {
 
         List<String> tokens = TechlogFileFieldTokenizer.readEventTokens(lines);
         Map<String, String> parameters = TechlogItemProcessor.process(tokens, description, reader.getLineNumber());
-        TechlogEventFactory factory = new TechlogEventFactory("erp-01-0x", "erp-01-01");
+        TechlogEventFactory factory = new TechlogEventFactory();
         AbstractTechlogEvent event = factory.createEvent(parameters, null);
 
         assertThat(event.getType(), equalTo(TechlogEventType.DBMSSQL));
