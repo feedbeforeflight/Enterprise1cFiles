@@ -108,7 +108,7 @@ public abstract class AbstractTechlogEventFieldMapper {
                     event.setProcessType(TechlogProcessType.getByName(value));
                     break;
                 case "p:processName":
-                    event.setIbName(value);
+                    event.setIbName(value.toLowerCase());
                     break;
                 case "t:connectID":
                     event.setConnectionID(Integer.parseInt(value));
@@ -130,7 +130,7 @@ public abstract class AbstractTechlogEventFieldMapper {
                     break;
                 case "Context":
                     try {
-                        event.setContext(removeQuotes(value));
+                        event.setContext(trimLeadingNewline(removeQuotes(value)));
                     }
                     catch (StringIndexOutOfBoundsException e) {
                         log.error("Error setting context: [{}] at line [{}]", value, event.getLineNumber());
@@ -144,7 +144,7 @@ public abstract class AbstractTechlogEventFieldMapper {
         return event;
     }
 
-    protected static String removeQuotes(String string) {
+    public static String removeQuotes(String string) {
         if (string.isEmpty() || string.length() == 1) {
             return string;
         }
@@ -161,4 +161,9 @@ public abstract class AbstractTechlogEventFieldMapper {
             }
         }
     }
+
+    public static String trimLeadingNewline(String string) {
+        return string.replaceFirst("^\\n", "");
+    }
+
 }

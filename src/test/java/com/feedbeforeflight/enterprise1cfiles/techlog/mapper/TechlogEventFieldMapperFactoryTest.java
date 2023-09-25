@@ -1,12 +1,7 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.mapper;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.ContextTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TdeadlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TlockTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.events.TtimeoutTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.mapper.mappers.*;
-import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogEventFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
