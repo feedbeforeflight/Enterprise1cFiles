@@ -4,9 +4,8 @@
   <artifactId>enterprise1c-files</artifactId>
   <versioning>
     <versions>
-      <version>0.0.2-SNAPSHOT</version>
       <version>0.0.5-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20230925162430</lastUpdated>
+    <lastUpdated>20230925164115</lastUpdated>
   </versioning>
 </metadata>
