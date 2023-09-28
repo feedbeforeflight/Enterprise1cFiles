@@ -2,8 +2,10 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
+@Slf4j
 public enum TechlogProcessType {
 
     RAGENT("ragent"),
@@ -15,7 +17,13 @@ public enum TechlogProcessType {
     private final String name;
 
     public static TechlogProcessType getByName(String name) {
-        return valueOf(name.toUpperCase());
+        try {
+            return valueOf(name.toUpperCase());
+        }
+        catch (IllegalArgumentException e) {
+            log.error("Unknown techlog process type name: " + name, e);
+            throw new IllegalArgumentException("Unknown techlog process type name: " + name);
+        }
     }
 
 }

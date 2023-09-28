@@ -50,14 +50,20 @@ public class TechlogDescription {
 
         directoryDescriptions.entrySet().stream().filter(entry -> entry.getValue().isDirectoryDeleted()).toList().
                 forEach(entry -> directoryDescriptions.remove(entry.getKey()));
+        log.debug("Read {} directory descriptions", directoryDescriptions.size());
     }
 
     private void readDirectory(Path directoryPath) {
         String pathString = directoryPath.getFileName().toString();
         TechlogDirectoryDescription directoryProcessor = directoryDescriptions.get(pathString);
         if (directoryProcessor == null) {
-            directoryProcessor = new TechlogDirectoryDescription(directoryPath, groupName, serverName, writer);
-            this.directoryDescriptions.put(pathString, directoryProcessor);
+            try {
+                directoryProcessor = new TechlogDirectoryDescription(directoryPath, groupName, serverName, writer);
+                this.directoryDescriptions.put(pathString, directoryProcessor);
+            }
+            catch (IllegalArgumentException e) {
+                return;
+            }
         }
         else {
             directoryProcessor.setDirectoryDeleted(false);

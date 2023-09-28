@@ -46,6 +46,9 @@ public class TechlogDirectoryDescription {
 
         String directoryName = path.getFileName().toString();
         String[] tags = directoryName.split("_");
+        if (tags[0].isEmpty()) {
+            throw new IllegalArgumentException("Empty type for folder " + path);
+        }
 
         this.processType = TechlogProcessType.getByName(tags[0]);
         this.processId = Integer.parseInt(tags[1]);
@@ -60,7 +63,7 @@ public class TechlogDirectoryDescription {
         try (Stream<Path> pathStream = Files.find(path, 1, (p, attr) -> p.getFileName().toString().endsWith(".log"))) {
             pathStream.forEach(p -> readLogfileDescription(p, newlyDiscoveredDescriptions));
         } catch (IOException e) {
-            log.debug("Error listing log files directory:", e);
+            log.error("Error listing log files directory:", e);
             return;
         }
 
@@ -70,6 +73,8 @@ public class TechlogDirectoryDescription {
                 forEach(entry -> fileDescriptions.remove(entry.getKey()));
 
         checkEventsLoadedAlreadyByPortions(newlyDiscoveredDescriptions);
+
+        log.debug("Readed {} descriptions for directory {}", fileDescriptions.size(), path);
     }
 
     private void checkEventsLoadedAlreadyByPortions(List<TechlogFileDescription> newlyDiscoveredFiles) {
@@ -99,6 +104,8 @@ public class TechlogDirectoryDescription {
             newlyDiscoveredDescriptions.add(newTechlogFileDescription);
             return newTechlogFileDescription;
         }).setFileDeleted(false);
+
+        log.debug("Read non-empty file description {}", filePath);
     }
 
     public int size() {
