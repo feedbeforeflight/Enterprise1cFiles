@@ -1,11 +1,8 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.description;
+package com.feedbeforeflight.enterprise1cfiles.techlog.source;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,12 +10,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
-import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-class TechlogFileDescriptionTest {
+class TechlogFileTest {
 
     private Path getTestPath() {
         return getTestPath("22122311");
@@ -30,38 +26,38 @@ class TechlogFileDescriptionTest {
 
     @Test
     void createFileId_ShouldMakeCorrectId() {
-        String fileId = TechlogFileDescription.createFileId(getTestPath(), TechlogProcessType.RPHOST, 4188);
+        String fileId = TechlogFile.createFileId(getTestPath(), TechlogProcessType.RPHOST, 4188);
 
         assertThat(fileId, equalTo("rphost_4188_22122311"));
     }
 
     @Test
-    void compareTo_ShouldCorrectlyCompareDescriptionsByTimestamp() {
-        TechlogFileDescription description1 = new TechlogFileDescription(getTestPath("22122312"),
+    void compareTo_ShouldCorrectlyCompareTechlogFilesByTimestamp() {
+        TechlogFile techlogFile1 = new TechlogFile(getTestPath("22122312"),
                 TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
-        TechlogFileDescription description2 = new TechlogFileDescription(getTestPath("22122313"),
+        TechlogFile techlogFile2 = new TechlogFile(getTestPath("22122313"),
                 TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
-        TechlogFileDescription description3 = new TechlogFileDescription(getTestPath("22122411"),
+        TechlogFile techlogFile3 = new TechlogFile(getTestPath("22122411"),
                 TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
-        TechlogFileDescription description4 = new TechlogFileDescription(getTestPath("22122411"),
+        TechlogFile techlogFile4 = new TechlogFile(getTestPath("22122411"),
                 TechlogProcessType.RPHOST, 3254, "main_group", "test_server");
 
-        assertThat(description1.compareTo(description2), lessThan(0));
-        assertThat(description1.compareTo(description3), lessThan(0));
-        assertThat(description3.compareTo(description2), greaterThan(0));
-        assertThat(description3.compareTo(description4), equalTo(0));
+        assertThat(techlogFile1.compareTo(techlogFile2), lessThan(0));
+        assertThat(techlogFile1.compareTo(techlogFile3), lessThan(0));
+        assertThat(techlogFile3.compareTo(techlogFile2), greaterThan(0));
+        assertThat(techlogFile3.compareTo(techlogFile4), equalTo(0));
     }
     @Test
     void updateLastRead_ShouldSetLastReadTimestampToCurrentTime() {
-        TechlogFileDescription description = new TechlogFileDescription(getTestPath("22122312"),
+        TechlogFile techlogFile = new TechlogFile(getTestPath("22122312"),
                 TechlogProcessType.RPHOST, 4188, "main_group", "test_server");
 
-        assertThat(description.getLastRead(), nullValue());
+        assertThat(techlogFile.getLastRead(), nullValue());
 
         Instant marker = Instant.now();
-        description.updateLastRead(Instant.now());
-        assertThat(description.getLastRead(), notNullValue());
-        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
+        techlogFile.updateLastRead(Instant.now());
+        assertThat(techlogFile.getLastRead(), notNullValue());
+        assertThat(techlogFile.getLastRead(), greaterThanOrEqualTo(marker));
     }
 
     @Test
@@ -70,17 +66,17 @@ class TechlogFileDescriptionTest {
         Files.createDirectory(directoryPath);
         Path filePath = createAndFillLogfile(directoryPath, "22122315.log", fileContent[0], 4188);
 
-        TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
+        TechlogFile techlogFile = new TechlogFile(filePath, TechlogProcessType.RPHOST,
                 4188, "main_group", "test_server");
-        assertThat("File expected to be modified", description.modifiedSinceLoad());
-        description.updateLastRead(Instant.now());
+        assertThat("File expected to be modified", techlogFile.modifiedSinceLoad());
+        techlogFile.updateLastRead(Instant.now());
 
         Files.readString(filePath);
         assertThat("Dummy operation to spend some nanoseconds", true);
 
-        assertThat("File expected to be not modified", !description.modifiedSinceLoad());
+        assertThat("File expected to be not modified", !techlogFile.modifiedSinceLoad());
         Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
-        assertThat("File expected to be modified", description.modifiedSinceLoad());
+        assertThat("File expected to be modified", techlogFile.modifiedSinceLoad());
     }
 
     private Path createAndFillLogfile(Path directoryPath, String name, String content, int processId) throws IOException {

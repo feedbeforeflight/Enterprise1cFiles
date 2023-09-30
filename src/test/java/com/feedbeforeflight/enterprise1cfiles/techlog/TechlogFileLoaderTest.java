@@ -3,7 +3,7 @@ package com.feedbeforeflight.enterprise1cfiles.techlog;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mockito;
@@ -46,23 +46,23 @@ class TechlogFileLoaderTest {
         Files.writeString(filePath, fileContent[1], StandardOpenOption.APPEND);
 
         TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
-        TechlogFileDescription description = new TechlogFileDescription(filePath, TechlogProcessType.RPHOST,
+        TechlogFile techlogFile = new TechlogFile(filePath, TechlogProcessType.RPHOST,
                 4188, "main_group", "test_server");
-        EnumMap<TechlogEventType, Integer> stats = TechlogFileLoader.load(writer, description);
+        EnumMap<TechlogEventType, Integer> stats = TechlogFileLoader.load(writer, techlogFile);
 
         assertThat(stats.size(), equalTo(1));
         assertThat(stats.get(TechlogEventType.TLOCK), equalTo(2));
-        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
-        assertThat(description.getLinesRead(), equalTo(5));
+        assertThat(techlogFile.getLastRead(), greaterThanOrEqualTo(marker));
+        assertThat(techlogFile.getLinesRead(), equalTo(5));
 
         marker = Instant.now();
         Files.writeString(filePath, fileContent[2], StandardOpenOption.APPEND);
-        stats = TechlogFileLoader.load(writer, description);
+        stats = TechlogFileLoader.load(writer, techlogFile);
 
         assertThat(stats.size(), equalTo(1));
         assertThat(stats.get(TechlogEventType.TLOCK), equalTo(1));
-        assertThat(description.getLastRead(), greaterThanOrEqualTo(marker));
-        assertThat(description.getLinesRead(), equalTo(8));
+        assertThat(techlogFile.getLastRead(), greaterThanOrEqualTo(marker));
+        assertThat(techlogFile.getLinesRead(), equalTo(8));
     }
 
     String[] fileContent = new String[]{

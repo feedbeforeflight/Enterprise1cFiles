@@ -1,8 +1,6 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.description;
+package com.feedbeforeflight.enterprise1cfiles.techlog.source;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,15 +9,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributeView;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
 @Slf4j
-public class TechlogFileDescription implements Comparable<TechlogFileDescription>{
+public class TechlogFile implements Comparable<TechlogFile>{
 
     @Getter
     private final Path path;
@@ -44,7 +40,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
     @Getter @Setter
     private Instant lastLoadedEventTimestamp;
     @Getter @Setter
-    private boolean fileDeleted;
+    private boolean deleted;
 
     public static String createFileId(Path path, TechlogProcessType processType, int processId) {
         return processType.getName() + "_" + processId + "_" + extractHourString(path);
@@ -54,7 +50,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
         return path.getFileName().toString().substring(0, 8);
     }
 
-    public TechlogFileDescription(Path path, TechlogProcessType processType, int processId, String groupName, String serverName) {
+    public TechlogFile(Path path, TechlogProcessType processType, int processId, String groupName, String serverName) {
         this.path = path;
         this.processType = processType;
         this.processId = processId;
@@ -99,7 +95,7 @@ public class TechlogFileDescription implements Comparable<TechlogFileDescription
     }
 
     @Override
-    public int compareTo(TechlogFileDescription o) {
+    public int compareTo(TechlogFile o) {
         return timestamp.compareTo(o.getTimestamp());
     }
 

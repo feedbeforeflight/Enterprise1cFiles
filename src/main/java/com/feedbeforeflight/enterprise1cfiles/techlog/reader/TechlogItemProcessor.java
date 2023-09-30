@@ -1,6 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogFile;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -10,17 +10,17 @@ import java.util.Map;
 @Slf4j
 public class TechlogItemProcessor {
 
-    public static Map<String, String> process(List<String> tokens, TechlogFileDescription description, int lineNumber) {
+    public static Map<String, String> process(List<String> tokens, TechlogFile techlogFile, int lineNumber) {
         Map<String,String> parameters = new HashMap<>();
 
         String token = tokens.get(0);
-        parameters.put("_groupname", description.getGroupName());
-        parameters.put("_servername", description.getServerName());
-        parameters.put("_processId", String.valueOf(description.getProcessId()));
-        parameters.put("_fileId", description.getId());
+        parameters.put("_groupname", techlogFile.getGroupName());
+        parameters.put("_servername", techlogFile.getServerName());
+        parameters.put("_processId", String.valueOf(techlogFile.getProcessId()));
+        parameters.put("_fileId", techlogFile.getId());
 
         parameters.put("_linenumber", String.valueOf(lineNumber));
-        parameters.put("_timestamp", description.getHourString() + ":" + token.substring(0, 5));
+        parameters.put("_timestamp", techlogFile.getHourString() + ":" + token.substring(0, 5));
         parameters.put("_timepart", token.substring(6, 12));
         parameters.put("_duration", token.substring(13));
 

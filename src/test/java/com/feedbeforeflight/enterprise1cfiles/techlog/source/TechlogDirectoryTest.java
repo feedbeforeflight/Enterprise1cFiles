@@ -1,4 +1,4 @@
-package com.feedbeforeflight.enterprise1cfiles.techlog.description;
+package com.feedbeforeflight.enterprise1cfiles.techlog.source;
 
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
@@ -19,7 +19,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-class TechlogDirectoryDescriptionTest {
+class TechlogDirectoryTest {
 
     private String createAndFillLogfile(Path directoryPath, String name, String content, int processId) throws IOException {
         Path filePath = Paths.get(directoryPath.toString(), name);
@@ -27,7 +27,7 @@ class TechlogDirectoryDescriptionTest {
         if (content != null && !content.isEmpty()) {
             Files.writeString(filePath, content);
         }
-        return TechlogFileDescription.createFileId(filePath, TechlogProcessType.RPHOST, processId);
+        return TechlogFile.createFileId(filePath, TechlogProcessType.RPHOST, processId);
     }
 
     private void deleteLogFile(Path directoryPath, String name) throws IOException {
@@ -36,7 +36,7 @@ class TechlogDirectoryDescriptionTest {
     }
 
     @Test
-    void readLogfileDescriptions_ShouldLoad(@TempDir Path tempPath) throws IOException {
+    void refreshLogFiles_ShouldLoad(@TempDir Path tempPath) throws IOException {
 
         Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
         Files.createDirectory(directoryPath);
@@ -52,19 +52,19 @@ class TechlogDirectoryDescriptionTest {
         TechlogItemWriter writer = Mockito.spy(TechlogItemWriter.class);
         Mockito.when(writer.getLastProgressBatch(Mockito.anyList())).thenReturn(lastProgressBatchResult);
 
-        TechlogDirectoryDescription directoryDescription = new TechlogDirectoryDescription(directoryPath,
+        TechlogDirectory techlogDirectory = new TechlogDirectory(directoryPath,
                 "main_group", "test_server", writer);
-        directoryDescription.readLogfileDescriptions();
+        techlogDirectory.refreshLogFiles();
 
         ArgumentCaptor<List<String>> progressBatchCaptor = ArgumentCaptor.forClass(List.class);
         Mockito.verify(writer, Mockito.times(1)).getLastProgressBatch(progressBatchCaptor.capture());
         List<String> idList = progressBatchCaptor.getValue();
         assertThat(idList, hasSize(3)); // file #2 ignored as it contains only BOM
-        assertThat(directoryDescription.getFileDescription(fileId3).getLastLoadedEventTimestamp(), equalTo(referenceLastRecordTimestamp));
+        assertThat(techlogDirectory.getFileById(fileId3).getLastLoadedEventTimestamp(), equalTo(referenceLastRecordTimestamp));
     }
 
     @Test
-    void readLogfileDescriptions_ShouldAppendNewlyCreatedFiles(@TempDir Path tempPath) throws IOException {
+    void refreshLogFiles_ShouldAppendNewlyCreatedFiles(@TempDir Path tempPath) throws IOException {
 
         Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
         Files.createDirectory(directoryPath);
@@ -74,25 +74,25 @@ class TechlogDirectoryDescriptionTest {
 
         TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
 
-        TechlogDirectoryDescription directoryDescription = new TechlogDirectoryDescription(directoryPath,
+        TechlogDirectory techlogDirectory = new TechlogDirectory(directoryPath,
                 "main_group", "test_server", writer);
-        directoryDescription.readLogfileDescriptions();
+        techlogDirectory.refreshLogFiles();
 
-        assertThat(directoryDescription.size(), equalTo(2));
+        assertThat(techlogDirectory.size(), equalTo(2));
 
-        TechlogFileDescription description1 = directoryDescription.getFileDescription(fileId1);
-        TechlogFileDescription description3 = directoryDescription.getFileDescription(fileId3);
+        TechlogFile techlogFile1 = techlogDirectory.getFileById(fileId1);
+        TechlogFile techlogFile3 = techlogDirectory.getFileById(fileId3);
 
         createAndFillLogfile(directoryPath, "22122313.log", "52:52.971015-0,EXCP,2,process=rphost", 4188);
-        directoryDescription.readLogfileDescriptions();
+        techlogDirectory.refreshLogFiles();
 
-        assertThat(directoryDescription.size(), equalTo(3));
-        assertThat(directoryDescription.getFileDescription(fileId1), sameInstance(description1));
-        assertThat(directoryDescription.getFileDescription(fileId3), sameInstance(description3));
+        assertThat(techlogDirectory.size(), equalTo(3));
+        assertThat(techlogDirectory.getFileById(fileId1), sameInstance(techlogFile1));
+        assertThat(techlogDirectory.getFileById(fileId3), sameInstance(techlogFile3));
     }
 
     @Test
-    void readLogfileDescriptions_ShouldRemoveDeletedFiles(@TempDir Path tempPath) throws IOException {
+    void refreshLogFiles_ShouldRemoveDeletedFiles(@TempDir Path tempPath) throws IOException {
         Path directoryPath = Paths.get(tempPath.toString(), "rphost_4188");
         Files.createDirectory(directoryPath);
         createAndFillLogfile(directoryPath, "22122314.log", "03:54.025014-0,EXCP,2,process=rphost", 4188);
@@ -102,20 +102,20 @@ class TechlogDirectoryDescriptionTest {
 
         TechlogItemWriter writer = Mockito.mock(TechlogItemWriter.class);
 
-        TechlogDirectoryDescription directoryDescription = new TechlogDirectoryDescription(directoryPath,
+        TechlogDirectory techlogDirectory = new TechlogDirectory(directoryPath,
                 "main_group", "test_server", writer);
-        directoryDescription.readLogfileDescriptions();
+        techlogDirectory.refreshLogFiles();
 
-        assertThat(directoryDescription.size(), equalTo(3));
-        TechlogFileDescription description3 = directoryDescription.getFileDescription(fileId3);
-        TechlogFileDescription description4 = directoryDescription.getFileDescription(fileId4);
+        assertThat(techlogDirectory.size(), equalTo(3));
+        TechlogFile techlogFile3 = techlogDirectory.getFileById(fileId3);
+        TechlogFile techlogFile4 = techlogDirectory.getFileById(fileId4);
 
         deleteLogFile(directoryPath, "22122314.log");
-        directoryDescription.readLogfileDescriptions();
+        techlogDirectory.refreshLogFiles();
 
-        assertThat(directoryDescription.size(), equalTo(2));
-        assertThat(directoryDescription.getFileDescription(fileId3), sameInstance(description3));
-        assertThat(directoryDescription.getFileDescription(fileId4), sameInstance(description4));
+        assertThat(techlogDirectory.size(), equalTo(2));
+        assertThat(techlogDirectory.getFileById(fileId3), sameInstance(techlogFile3));
+        assertThat(techlogDirectory.getFileById(fileId4), sameInstance(techlogFile4));
     }
 
 }

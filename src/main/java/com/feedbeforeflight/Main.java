@@ -1,20 +1,5 @@
 package com.feedbeforeflight;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
-import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
-import com.feedbeforeflight.enterprise1cfiles.techlog.reader.*;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Instant;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class Main {
     public static void main(String[] args) {
 

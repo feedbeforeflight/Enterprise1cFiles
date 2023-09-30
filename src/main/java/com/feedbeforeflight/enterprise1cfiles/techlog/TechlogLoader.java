@@ -1,40 +1,37 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogDirectoryDescription;
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogDescription;
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogDirectory;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.Techlog;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogFile;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogItemWriter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 public class TechlogLoader {
 
-    private final TechlogDescription techlogDescription;
+    private final Techlog techlog;
     private final TechlogItemWriter writer;
 
-    public TechlogLoader(TechlogDescription techlogDescription, TechlogItemWriter writer) {
-        this.techlogDescription = techlogDescription;
+    public TechlogLoader(Techlog techlog, TechlogItemWriter writer) {
+        this.techlog = techlog;
         this.writer = writer;
     }
 
     public void load() {
         try {
-            techlogDescription.readFileDescriptions();
+            techlog.refresh();
         } catch (IOException e) {
             log.error("Error refreshing files", e);
             return;
         }
 
-        for (TechlogDirectoryDescription directoryDescription : techlogDescription.directories()) {
-            log.debug("reading directory for process {} with pid {}", directoryDescription.getProcessType(), directoryDescription.getProcessId());
+        for (TechlogDirectory techlogDirectory : techlog.directories()) {
+            log.debug("reading directory for process {} with pid {}", techlogDirectory.getProcessType(), techlogDirectory.getProcessId());
 
-            for (TechlogFileDescription fileDescription : directoryDescription.files()) {
-                TechlogFileLoader.load(writer, fileDescription);
+            for (TechlogFile techlogFile : techlogDirectory.files()) {
+                TechlogFileLoader.load(writer, techlogFile);
             }
         }
     }

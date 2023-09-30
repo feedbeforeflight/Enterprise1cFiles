@@ -1,6 +1,6 @@
 package com.feedbeforeflight.enterprise1cfiles.techlog.reader;
 
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogFile;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -16,9 +16,9 @@ class TechlogFileReaderTest {
 
     @Test
     void readItemLines_ShouldSucceed_WithExtraEmptyLineAtEnd() throws NoSuchFieldException, IllegalAccessException, IOException {
-        TechlogFileDescription description = Mockito.mock(TechlogFileDescription.class);
+        TechlogFile techlogFile = Mockito.mock(TechlogFile.class);
 
-        TechlogFileReader reader = new TechlogFileReader(description);
+        TechlogFileReader reader = new TechlogFileReader(techlogFile);
         LineNumberReader lineNumberReader = Mockito.mock(LineNumberReader.class);
         Mockito.when(lineNumberReader.readLine()).
                 thenReturn(
@@ -56,9 +56,9 @@ class TechlogFileReaderTest {
 
     @Test
     void readItemLines_ShouldSucceed_WithoutExtraEmptyLineAtEnd() throws NoSuchFieldException, IllegalAccessException, IOException {
-        TechlogFileDescription description = Mockito.mock(TechlogFileDescription.class);
+        TechlogFile techlogFile = Mockito.mock(TechlogFile.class);
 
-        TechlogFileReader reader = new TechlogFileReader(description);
+        TechlogFileReader reader = new TechlogFileReader(techlogFile);
 
         Field recordStartLineBufferField = reader.getClass().getDeclaredField("recordStartLineBuffer");
         recordStartLineBufferField.setAccessible(true);

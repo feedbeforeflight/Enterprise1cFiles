@@ -3,7 +3,7 @@ package com.feedbeforeflight.enterprise1cfiles.techlog.data.events;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.AbstractTechlogEvent;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogEventType;
 import com.feedbeforeflight.enterprise1cfiles.techlog.data.TechlogProcessType;
-import com.feedbeforeflight.enterprise1cfiles.techlog.description.TechlogFileDescription;
+import com.feedbeforeflight.enterprise1cfiles.techlog.source.TechlogFile;
 import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogEventFactory;
 import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogFileFieldTokenizer;
 import com.feedbeforeflight.enterprise1cfiles.techlog.reader.TechlogFileReader;
@@ -26,10 +26,10 @@ class DbmssqlTechlogEventTest {
     void ShoulSucceed_WhenLoadingEventText() throws NoSuchFieldException, IllegalAccessException, IOException {
         Queue<String> samplesQueue = getSampleTechLogEntry(sampleWithPlanSQL);
 
-        TechlogFileDescription description = Mockito.mock(TechlogFileDescription.class);
-        Mockito.when(description.getHourString()).thenReturn("22122615");
+        TechlogFile techlogFile = Mockito.mock(TechlogFile.class);
+        Mockito.when(techlogFile.getHourString()).thenReturn("22122615");
 
-        TechlogFileReader reader = new TechlogFileReader(description);
+        TechlogFileReader reader = new TechlogFileReader(techlogFile);
 
         Field recordStartLineBufferField = reader.getClass().getDeclaredField("recordStartLineBuffer");
         recordStartLineBufferField.setAccessible(true);
@@ -46,7 +46,7 @@ class DbmssqlTechlogEventTest {
         assertThat(lines, hasSize(247));
 
         List<String> tokens = TechlogFileFieldTokenizer.readEventTokens(lines);
-        Map<String, String> parameters = TechlogItemProcessor.process(tokens, description, reader.getLineNumber());
+        Map<String, String> parameters = TechlogItemProcessor.process(tokens, techlogFile, reader.getLineNumber());
         TechlogEventFactory factory = new TechlogEventFactory();
         AbstractTechlogEvent event = factory.createEvent(parameters, null);
 
