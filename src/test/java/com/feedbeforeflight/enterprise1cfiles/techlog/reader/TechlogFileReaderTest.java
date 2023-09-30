@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.Deque;
 
@@ -93,5 +94,45 @@ class TechlogFileReaderTest {
         assertThat(lines, empty());
 
     }
+
+    @Test
+    void readItemLines_ShouldSucceed_WithEmptyLinesInTextFields() throws NoSuchFieldException, IllegalAccessException, IOException {
+        TechlogFile techlogFile = Mockito.mock(TechlogFile.class);
+        TechlogFileReader reader = new TechlogFileReader(techlogFile);
+        LineNumberReader lineNumberReader = new LineNumberReader(new StringReader(errorText));
+
+        Field recordStartLineBufferField = reader.getClass().getDeclaredField("recordStartLineBuffer");
+        recordStartLineBufferField.setAccessible(true);
+        recordStartLineBufferField.set(reader, lineNumberReader.readLine());
+
+        Field readerField = reader.getClass().getDeclaredField("reader");
+        readerField.setAccessible(true);
+        readerField.set(reader, lineNumberReader);
+
+        Deque<String> lines = reader.readItemLines();
+        assertThat(lines, hasSize(11));
+
+        lines = reader.readItemLines();
+        assertThat(lines, hasSize(1));
+
+        lines = reader.readItemLines();
+        assertThat(lines, empty());
+    }
+
+    String errorText = """
+    02:53.578000-0,EXCP,2,process=rphost,p:processName=zup,OSThread=9776,t:clientID=9080,t:applicationName=1CV8C,t:computerName=PetrovPP,t:connectID=23141,SessionID=9284,Usr=Петров Петр Петрович,AppID=1CV8C,Exception=580392e6-ba49-4280-ac67-fcd6f2180121,Descr='src\\VResourceInfoBaseImpl.cpp(1130):
+    580392e6-ba49-4280-ac67-fcd6f2180121: Неспецифицированная ошибка работы с ресурсом
+    Ошибка при выполнении запроса POST к ресурсу /e1cib/logForm:
+    8d366056-4d5a-4d88-a207-0ae535b7d28e: Ошибка при записи внутреннего документа:
+    Поле "Подписал" не заполнено
+                
+    Ссылка на объект в ДО: e1cib/data/Справочник.ВнутренниеДокументы?ref=00000000000000000000000000000000
+    Ссылка на объект в ИС: e1cib/data/Документ.Скан?ref=8df6005056a76d7511ee5c5c1d609135
+    {ОбщийМодуль.ИнтеграцияС1СДокументооборот.Модуль(476)}:		ВызватьИсключение
+    {Обработка.ИнтеграцияС1СДокументооборот.Форма.ВнутреннийДокумент.Форма(4889)}:		ИнтеграцияС1СДокументооборот.ПроверитьВозвратВебСервиса(Прокси, Результат);
+    '
+    34:30.627001-30993,TLOCK,4,process=rphost,p:processName=zup,OSThread=10616,t:clientID=625,t:applicationName=1CV8C,t:computerName=IvanovII,t:connectID=5731,SessionID=496,Usr=Иванов Иван Иванович,AppID=1CV8C,DBMS=DBMSSQL,DataBase=sql1c\\zup,Regions=AccumRg31253.DIMS,Locks='AccumRg31253.DIMS Exclusive Fld1048=0 Period=[T"20230901000000":+] Splitter=0 Fld31254=170:8106005056a72d3d11e82dc28e377df6 Fld31255=372:8acf005056a76d7511ebda1ed4b35f7a Fld31256=771:be057e1f8d79cacb43da2058feef7cdb',WaitConnections=,Context=Данные.ОтменитьПроведение
+    
+    """;
 
 }

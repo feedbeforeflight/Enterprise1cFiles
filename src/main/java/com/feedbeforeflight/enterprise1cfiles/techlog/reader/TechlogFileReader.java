@@ -42,12 +42,16 @@ public class TechlogFileReader implements AutoCloseable {
             }
             if (line != null && line.isEmpty()) {
                 recordStartLineBuffer = null;
-                line = null;
+                //line = null;
             };
             if (line != null && recordStartLinePattern.matcher(line).matches()) {
                 recordStartLineBuffer = line;
                 line = null;
             }
+        }
+
+        if (result.get(result.size() - 1).isEmpty()) {
+            result.removeLast();
         }
 
         techlogFile.setLinesRead(getLineNumber());
