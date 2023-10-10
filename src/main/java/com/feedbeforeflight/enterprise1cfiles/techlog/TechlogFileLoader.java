@@ -30,6 +30,7 @@ public class TechlogFileLoader {
             reader.openFile();
             lastRead = Instant.now();
             log.debug("- reading fileID {} timestamp {}", techlogFile.getId(), techlogFile.getTimestamp());
+            log.debug("-- last loaded timestamp {}", techlogFile.getLastLoadedEventTimestamp());
 
             skipped = techlogFile.getLinesRead();
             if (skipped > 0) {

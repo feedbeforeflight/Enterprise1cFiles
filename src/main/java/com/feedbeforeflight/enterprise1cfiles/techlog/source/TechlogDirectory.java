@@ -101,10 +101,9 @@ public class TechlogDirectory {
         files.computeIfAbsent(fileId, s -> {
             TechlogFile newTechlogFile = new TechlogFile(filePath, processType, processId, groupName, serverName);
             newlyDiscoveredFiles.add(newTechlogFile);
+            log.debug("Read non-empty file description {}", filePath);
             return newTechlogFile;
         }).setDeleted(false);
-
-        log.debug("Read non-empty file description {}", filePath);
     }
 
     public int size() {
